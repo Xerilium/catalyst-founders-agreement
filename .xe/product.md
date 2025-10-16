@@ -28,3 +28,15 @@ The workflow encompasses four key phases:
 ## Non-Goals
 
 This is **not** a legal service, binding document generator, or replacement for professional legal counsel. The output serves as a structured foundation for legal review and formal incorporation processes.
+
+## Team
+
+**Roles:**
+
+- **Product Manager**: Michael Flanakin (@flanakin)
+- **Architect**: Michael Flanakin (@flanakin)
+- **Engineer**: Michael Flanakin (@flanakin)
+
+**AI Reviewers:**
+
+- GitHub Copilot (copilot-swe-agent)

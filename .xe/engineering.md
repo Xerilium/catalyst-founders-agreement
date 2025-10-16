@@ -43,10 +43,10 @@ See `.xe/standards/` for language-specific coding standards and conventions.
   - Reproducible results
 
 - **Quality**
-  - >90% unit test coverage for all features
-  - Multi-user validation scenarios
-  - Platform integration testing
-  - Output completeness verification
+  - 90% code coverage target for all features
+  - 100% coverage for critical paths and error handling
+  - Complete specifications and implementation plans
+  - Clear documentation for complex logic and architectural decisions
 
 ## Development Process
 

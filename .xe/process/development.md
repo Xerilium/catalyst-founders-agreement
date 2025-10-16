@@ -31,73 +31,45 @@ Use the following development process when assigned to a task or asked to genera
 
 ### Phase 1. Analysis
 
-- Step 1: Gain product and architectural context
-  - Based on the provided inputs, determine if the requested change is for one or more new or existing features
-    - Review `.xe/product.md` and `.xe/architecture.md` to understand the high-level system goals and architecture
-    - Review the list of existing features by checking the folders in the `.xe/specs` folder
-  - Create a `.xe/specs/{feature-id}/research.md` file and document any important product or architectural context with a date of the findings
+1. **Product & Architecture Context**
+   - Determine if change affects new or existing features
+   - Review `.xe/product.md` and `.xe/architecture.md` for system understanding
+   - Review existing features in `.xe/specs/` folder
+   - Create `.xe/specs/{feature-id}/research.md` documenting key findings with date
 
-- Step 2: Perform market research (if appropriate)
-  - If this is for a new feature or major feature enhancement (not a bug), review the existing competitive analysis located at `.xe/competitive-analysis.md`
-    - If any of the following are true, create or update the competitive analysis:
-      - A product competitive analysis has not been documented
-      - The competitive analysis was more than 3 months old
-      - The change being implemented is a major pivot that shifts the product into a new category not covered by the current competitive analysis
-    - To generate a competitive analysis, think deeply and perform web research to generate a detailed competitive analysis report
-    - Save the competitive analysis report in `.xe/competitive-analysis.md`
-  - Update the `.xe/specs/{feature-id}/research.md` file with any new information captured from market research (if any)
+2. **Market Research** (if new feature or major enhancement)
+   - Review `.xe/competitive-analysis.md` (if exists and <3 months old)
+     - Update competitive analysis if never documented, >3 months old, or major product pivot
+   - Update `research.md` with market insights
 
-- Step 3: Understand feature requirements and source code
-  - Review related source code based on the folder structure defined in `.xe/architecture.md` or feature `plan.md` files
-  - For bugs:
-    - Review the source code to identify the component that is causing the unexpected results
-    - Identify the feature that the source code component maps to
-    - Review existing `spec.md` and `plan.md` for the corresponding feature in the `.xe/specs/{feature-id}/` folder to understand intended behavior
-  - If this change impacts one or more existing features:
-    - Review the `spec.md` for each existing feature to understand the feature requirements
-    - Review the `plan.md` for each existing feature to understand how the feature was implemented in source code
-    - Determine if a subset of the feature or source code being updated could be refactored and extracted for reuse or improve maintainability
-    - Determine if there is any existing technical debt that should be cleaned up as part of this change by considering:
-      - **Implementation Scope**: How much additional work to include cleanup?
-      - **Risk vs. Benefit**: Does cleanup justify increased complexity?
-      - **Rollout Strategy**: Should debt cleanup be pre-implementation, during, or post-implementation?
-  - If this change impacts multiple features:
-    - Determine which feature is the primary feature
-    - Determine what dependencies each feature has and create a dependency tree
-    - Perform steps for each phase against the primary feature first, then each secondary feature
-  - Update the `.xe/specs/{feature-id}/research.md` file with any important feature or source code context, including:
-    - Current code paths and component ownership
-    - Existing specs, plans, and tasks for related features
-    - Any internal or external dependencies or integrations
-    - Any migration or technical debt implications
+3. **Feature Requirements & Source Code**
+   - Review related source code per `.xe/architecture.md` structure
+   - **For bugs**: Identify faulty component, map to feature, review spec.md/plan.md for intended behavior
+   - **For existing feature changes**:
+     - Review spec.md (requirements) and plan.md (implementation)
+     - Identify refactoring opportunities and technical debt
+     - Assess cleanup scope, risk vs benefit, and rollout timing
+   - **For multi-feature changes**:
+     - Identify primary feature and create dependency tree
+     - Process primary feature first, then dependencies
+   - Update `research.md` with:
+     - Code paths and component ownership
+     - Related specs, plans, tasks
+     - Dependencies and integrations
+     - Migration and technical debt implications
 
 ### Phase 2. Specification
 
-**For enhancements:**
-
-- For new features:
-  - Create `.xe/specs/{feature-id}/spec.md` based on the `.xe/templates/specs/spec.md` template
-  - Review and complete each section based on the provided `> [INSTRUCTIONS]`
-- For enhancements to existing features:
-  - Review instructions from the `.xe/templates/specs/spec.md` template for context
-  - Update each section in `.xe/specs/{feature-id}/spec.md` as appropriate for the enhancement being applied
-  - Consider extracting compartmentalized requirements into a dedicated feature to increase reuse and maintainability when needed
-- **DO NOT** add implementation details (languages, frameworks, APIs)
-  - If there is an upstream platform or integration requirement, define that rather than the current technology constraints (since the technology constraints may change over time)
-- Focus on user value and business needs - the WHAT and WHY, not HOW
+- Define WHAT and WHY (user value, business needs), not HOW (implementation)
+  - **New features**: Create `.xe/specs/{feature-id}/spec.md` from template
+  - **Enhancements**: Update existing spec.md; consider extracting to separate feature if compartmentalized
+  - **Bugs**: Update spec.md only if requirements were unclear
+- Focus on user value and business needs
 - Write for non-technical stakeholders and AI code generation
-- Follow specification writing standards (see below)
-- Remove instructions when the section is complete
-- Verify requirements are testable and unambiguous
-- Verify all success criteria are measurable
-- Verify all dependencies and assumptions identified
-- Review and approve `spec.md` before proceeding to planning
-  - Call out any key updates to market or competitive analyses that uncovered shortcomings in the current feature spec
-
-**For bugs:**
-
-- Update specs if requirements were unclear or need clarification
-- Review and approve spec changes before proceeding to planning
+- Define platform/integration requirements, not technology constraints
+- Ensure requirements are testable and unambiguous
+- Ensure success criteria are measurable
+- Document all dependencies and assumptions
 
 ### Phase 3. Planning
 
@@ -242,23 +214,19 @@ Use the following development process when assigned to a task or asked to genera
 5. Delete rollout plan file when complete
 6. Remove entry from `.xe/rollouts/README.md`
 
-**Note**: Long-term cleanup tasks go to Stack backlog, not rollout plan.
-
 ### Phase 5. Validation
 
-- Run validation checks:
-  - `npm run format` - Prettier formatting for markdown
-  - `npm run lint` - PowerShell Script Analyzer
-  - `npm run test` - Unit and integration tests
-- PowerShell Script Analyzer with zero critical issues
+All validation steps below must pass before proceeding to Phase 6.
+
+- `npm run format` - Format all markdown and code files
+- `npm run lint` - Run linting checks (zero critical issues required)
+- `npm run test` - Execute all unit and integration tests (no failures or warnings)
+- Verify code coverage meets target per `.xe/engineering.md`
 - Ensure all standards in `.xe/standards/` are applied
-- Run all unit tests (>90% code coverage target)
-- Run integration tests for end-to-end workflows
-- Ensure no test warnings or errors
-- Automated quality gate enforcement through engineering standards compliance testing
-- Manual review for code quality, security, and performance
-- Integration testing with existing Stack ecosystem
-- Documentation completeness verification
+- Code quality review (readability, maintainability, patterns)
+- Security review (input validation, sanitization, vulnerabilities)
+- Performance review (efficiency, resource usage, bottlenecks)
+- Documentation completeness (`spec.md`, `plan.md`, code comments)
 
 ### Phase 6. Review
 
@@ -298,7 +266,6 @@ Every feature requires a rollout plan as the orchestrator. See [`.xe/templates/s
 - **Scope**: Can cover multiple features, single feature, or subset of a feature
 - **Flexibility**: Simple changes may have empty pre/post/cleanup sections
 - **Tracking**: Markdown checkbox lists with status updates in frontmatter
-- **Long-term tasks**: Add to Stack backlog, not rollout plan
 
 **Discovery index: `.xe/rollouts/README.md`**
 
@@ -331,36 +298,25 @@ Every feature requires a rollout plan as the orchestrator. See [`.xe/templates/s
   - Duplicating requirements from `spec.md` (reference instead)
   - Pseudo-code that will drift from implementation (describe flow, don't write code)
   - Hardcoded configuration values (reference config files instead)
-  - Score tables or weights (reference `.stack/settings.json`)
 - **Best Practices**:
   - Use decision tables and flow diagrams instead of code samples
   - Reference actual implementation files as source of truth
   - Focus on architectural decisions, not implementation details
 
-## Code Generation Standards
+## Code Implementation Guidelines
 
 ### Quality Requirements
 
-- Generated PowerShell functions must include comprehensive comment-based help
-- Parameter validation using PowerShell validation attributes is mandatory
-- Consistent error handling patterns following Stack conventions
-- All code must follow established naming conventions (see `.xe/standards/powershell.md`)
+- Generated functions must include comprehensive documentation
+- Parameter validation is mandatory
+- Consistent error handling patterns following project conventions
+- All code must follow established naming conventions (see `.xe/standards/`)
 
 ### Integration Requirements
 
-- Module loading and export validation with existing Stack ecosystem
-- Comprehensive testing with >90% code coverage
+- Module loading and export validation with existing ecosystem
+- Comprehensive testing per coverage target in `.xe/engineering.md`
 - Engineering standards compliance validation
-
-## Quality Gates
-
-All features must pass:
-
-- **Engineering Standards Compliance**: Stack-EngineeringStandards.Tests.ps1 validation
-- **Code Quality**: PowerShell Script Analyzer with zero critical issues
-- **Testing**: >90% unit test coverage with comprehensive integration testing
-- **Documentation**: Complete `spec.md` and plan.md with implementation documentation
-- **Integration**: Stack ecosystem compatibility validation
 
 ## Code Review Standards
 
@@ -372,16 +328,16 @@ All features must pass:
 
 ### Quality Enforcement
 
-- Code quality assessed using PowerShell Script Analyzer
+- Code quality assessed using linting tools
 - Help documentation complete for all public functions
 - Parameter validation implemented for input security
-- Error handling patterns follow Stack conventions
+- Error handling patterns follow project conventions
 
 ### Security and Performance
 
 - Input validation and sanitization patterns implemented
 - File system access and path validation security reviewed
-- Performance impact assessed for existing Stack operations
+- Performance impact assessed for existing project operations
 - Memory usage and resource consumption validated
 
 ## Testing Strategy
@@ -404,5 +360,5 @@ All features must pass:
 ### Continuous Integration
 
 - GitHub Actions for automated testing on changes
-- PowerShell Script Analyzer for code quality
-- Prettier formatting for markdown consistency
+- Automated linting for code quality
+- Automated formatting for consistency
