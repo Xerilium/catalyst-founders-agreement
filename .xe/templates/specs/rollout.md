@@ -56,7 +56,7 @@ created: YYYY-MM-DD
 ## Cleanup
 
 > [INSTRUCTIONS]
-> Immediate cleanup actions to complete the rollout. Examples: remove temporary files, update documentation, delete deprecated code, remove obsolete files from debt cleanup (delete old feature.md/architecture.md files after successful migration, remove duplicate code after consolidation, clean up temporary backup files). Long-term cleanup tasks should go to Stack backlog, not here. Leave empty (with "None" or "N/A") if not needed.
+> Immediate cleanup actions to complete the rollout. Examples: remove temporary files, update documentation, delete deprecated code, remove obsolete files from debt cleanup (delete old feature.md/architecture.md files after successful migration, remove duplicate code after consolidation, clean up temporary backup files). Leave empty (with "None" or "N/A") if not needed.
 
 - [ ] Task 1
 - [ ] Task 2

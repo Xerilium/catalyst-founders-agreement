@@ -286,44 +286,51 @@ This feature implementation plan extends the technical architecture defined in `
    - Placement bonus: If in active section, calculate `(total_items - position) / 10`
    - Default bonuses to 0 if not applicable
 
-4. **Compute Total Score**:
-   - Total = emoji_score + project_bonus + placement_bonus
-   - Round to 1 decimal place for consistency
-
-5. **Optional Breakdown Generation**:
-   - If breakdown requested, create structured object with:
-     - Individual emoji contributions (category, symbol, value)
-     - Project and placement bonuses
-     - Calculated total for validation
-   - Return score with breakdown or score alone based on request
-
 ### 3. Integration Points
+
+> [INSTRUCTIONS]
+> Document dependencies and consumers of this feature.
 
 **Consumed by:**
 
-- stack-summary feature: Calls scoring with breakdown for display
-- task-filtering feature: Uses scores for priority sorting
+> [INSTRUCTIONS]
+> List features that use this feature's outputs. Example:
+>
+> - summary feature: Calls scoring with breakdown for display
+> - filtering feature: Uses scores for priority sorting
 
 **Depends on:**
 
-- config-management feature: Provides emoji weight configuration
-- project-files feature: Supplies task and project data
+> [INSTRUCTIONS]
+> List features this feature depends on. Example:
+>
+> - config-management feature: Provides configuration data
+> - data-storage feature: Supplies persistent data
 
 ### 4. Error Handling
 
-- Missing emoji categories: Default to zero contribution (graceful degradation)
-- Invalid configuration: Use hardcoded defaults, log warning
-- Null/empty task data: Return score of 0, do not throw
-- Breakdown mismatch: Log validation warning if calculated total ≠ actual score
+> [INSTRUCTIONS]
+> Define failure scenarios and graceful degradation strategies. Include validation rules, edge cases, and error responses. Examples:
+>
+> - Missing required data: Default to safe fallback (graceful degradation)
+> - Invalid configuration: Use hardcoded defaults, log warning
+> - Null/empty inputs: Return empty result, do not throw
+> - Validation failures: Return descriptive error message with recovery steps
 
 ### 5. Performance Considerations
 
-- Cache emoji weights (reload only on configuration changes)
-- Minimize data structure traversals (single-pass aggregation)
-- Use efficient data structures (hash maps for O(1) lookups)
-- Profile with representative data (target: <1ms per task, <100ms for 1000 tasks)
+> [INSTRUCTIONS]
+> Document optimization strategies and performance targets. Examples:
+>
+> - Caching: Cache expensive computations (reload only on changes)
+> - Algorithm efficiency: Single-pass processing where possible
+> - Data structures: Use efficient lookups (hash maps for O(1))
+> - Profiling targets: <1ms per operation, <100ms for batch operations
 
 ### 6. Testing Strategy
+
+> [INSTRUCTIONS]
+> Define testing approach and coverage targets.
 
 **Unit Tests:**
 
@@ -365,8 +372,8 @@ This feature implementation plan extends the technical architecture defined in `
 **Basic usage (TypeScript):**
 
 ```typescript
-const score = await taskService.calculateScore(task, projects)
-console.log(score) // 16.2
+const score = await taskService.calculateScore(task, projects);
+console.log(score); // 16.2
 ```
 
 **With breakdown (Python):**
@@ -401,9 +408,9 @@ func loadTasks() async {
 
 ```javascript
 // Get task with score breakdown
-const response = await fetch("/api/v1/tasks/123?includeScore=true")
-const data = await response.json()
+const response = await fetch("/api/v1/tasks/123?includeScore=true");
+const data = await response.json();
 
-console.log(data.task.score) // 16.2
-console.log(data.task.breakdown) // { emojiContributions: [...], ... }
+console.log(data.task.score); // 16.2
+console.log(data.task.breakdown); // { emojiContributions: [...], ... }
 ```
