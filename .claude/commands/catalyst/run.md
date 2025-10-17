@@ -1,22 +1,16 @@
 ---
 name: "run"
-description: Execute Catalyst playbooks with intelligent input processing and context enhancement
+description: Execute Catalyst playbooks with input mapping and validation
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Task, TodoWrite
-argument-hint: <playbook-id> [input1] [input2] ..
-Usage: /catalyst:run <playbook-id> [input1] [input2] [input3] ..
-Examples:
-  /catalyst:run set-playbook "Create a playbook for automated code review"
-  /catalyst:run new-feature user-dashboard "Dashboard for managing user accounts"
-  /catalyst:run deploy-service payment-api production
+argument-hint: <playbook-id> [input1] [input2] ...
+Usage: /catalyst:run <playbook-id> [input1] [input2] [input3] ...
+Examples: /catalyst:run start-rollout "Add user dashboard feature"
+  /catalyst:run start-rollout user-dashboard "Dashboard for managing user accounts" autonomous
 ---
 
 # Run Catalyst Playbook
 
-Execute a Catalyst playbook with intelligent input processing and context enhancement based on the playbook's requirements and structure
-
-## Purpose
-
-This command locates, parses, and executes Catalyst playbooks while intelligently enhancing user inputs based on the playbook's context, requirements, and implementation steps
+Execute a Catalyst playbook and map user inputs to playbook requirements and following playbook execution steps.
 
 ## Usage
 
@@ -38,24 +32,19 @@ This command locates, parses, and executes Catalyst playbooks while intelligentl
 2. **Read playbook**
    - Read the playbook file at `.xe/playbooks/{playbook-id}.md`
    - Extract inputs, outputs, error handling, success criteria, and execution steps
-3. Enhance inputs intelligently
+3. **Map and validate inputs**
    - Map command inputs to playbook inputs
    - Apply smart transformations (e.g., convert names to kebab-case when appropriate)
-   - Use product details in `.xe/product.md` and features defined in `.xe/specs/` for product and feature context, if needed to enrich inputs
-   - Use playbook description to fill knowledge gaps
-   - Use deep reasoning when processing inputs
    - Validate required inputs and provide helpful error messages if missing or insufficient
-4. Execute playbook steps
+4. **Execute playbook steps**
    - Follow playbook steps sequentially starting from numbered H2 sections (e.g., `1. Validate inputs`)
    - Use mapped inputs for placeholders as appropriate
-5. Provide execution summary (if not covered by playbook steps)
+5. **Provide execution summary** (if not covered by playbook steps)
    - Report what was accomplished
    - Note any assumptions made or manual review needed
    - Highlight any errors or warnings encountered
 
 ## Error handling
-
-**Common issues and solutions:**
 
 - **Playbook not found** - List available playbooks in `.xe/playbooks/` and suggest closest matches
 - **Missing or invalid inputs** - Show required inputs with descriptions from playbook "Inputs" section
@@ -76,25 +65,24 @@ Always attempt to resolve issues intelligently based on available context. If is
 ## Examples
 
 ```bash
-# Execute set-playbook with description
-/catalyst:run set-playbook "Create a playbook for automated code review"
+# Execute start-rollout with feature description
+/catalyst:run start-rollout "Add user dashboard feature"
 ```
 
 This will:
 
-1. Find `set-playbook.md` in `.xe/playbooks/`
-2. Parse input requirements (description field)
-3. Enhance the description with context
-4. Execute playbook steps to create new playbook
+1. Find `start-rollout.md` in `.xe/playbooks/`
+2. Map description to `feature-description` input
+3. Execute playbook steps to create spec, plan, and implementation
 
 ```bash
-# Execute new-feature with multiple inputs
-/catalyst:run new-feature user-dashboard "Dashboard for managing user accounts"
+# Execute start-rollout with multiple inputs in autonomous mode
+/catalyst:run start-rollout user-dashboard "Dashboard for managing user accounts" autonomous
 ```
 
 This will:
 
-1. Find `new-feature.md` playbook
-2. Map inputs to requirements (feature-name, description)
+1. Find `start-rollout.md` playbook
+2. Map inputs to requirements (rollout-id, feature-description, execution-mode)
 3. Convert "user-dashboard" to kebab-case
-4. Execute feature creation workflow
+4. Execute workflow autonomously without manual checkpoints
