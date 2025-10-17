@@ -35,31 +35,36 @@ Orchestrates feature development following the development process defined in `.
 
 ## 2. Initialize
 
-**Context Loading:**
-
 - Read `.xe/process/development.md` for workflow phases
 - Read `.xe/product.md` for product context
 - Scan `.xe/specs/` directory for existing features
 
-**Token Budget Warning:**
-
-- Subagent context strictly limited to 1-2K tokens
-- Pass only essential excerpts, never full files
-- Smart budget management with progress tracking
-
 ## 3. Research
 
-### Development Process Phase 1a: Analysis 🔬
+### Development Process Phase 1: Analysis 🔬
 
-- Review product & architecture context
-- Conduct market research if new feature or major enhancement
-- Analyze feature requirements & source code
-- **Technical Debt Assessment:**
-  - Identify technical debt and cleanup opportunities relevant to current task
-  - Assess implementation scope: How much additional work to include cleanup?
-  - Evaluate risk vs. benefit: Does cleanup justify increased complexity?
-  - Determine rollout strategy: Should debt cleanup be pre-implementation, during, or post-implementation?
-- Document findings in `.xe/specs/{feature-id}/research.md`
+1. Review product & architecture context
+2. Conduct market research and save in `.xe/competitive-analysis.md` if never documented, >3 months old, or major product pivot
+3. Analyze feature requirements & source code
+4. Think deeply about the requested change and rollout goals
+   - Determine if rollout creates new features or updates existing features
+   - Define a modular design based on `.xe/engineering.md` principles (e.g., Separation of Concerns, Single Responsibility, Don't Repeat Yourself)
+   - Break out sub-features for reuse and maintainability
+   - Identify the primary feature and define a dependency tree
+5. Review existing features in dependency tree and identify technical debt and cleanup opportunities relevant to the current task
+   - Assess implementation scope: How much additional work to include cleanup?
+   - Evaluate risk vs. benefit: Does cleanup justify increased complexity?
+   - Determine rollout strategy: Should debt cleanup be pre-implementation, during, or post-implementation?
+6. Document findings in `.xe/specs/{feature-id}/research.md`
+7. **Human Checkpoint** → Present TLDR feature dependency graph for review:
+
+   |    #     | Option                     | Notes                               |
+   | :------: | -------------------------- | ----------------------------------- |
+   | 🔵 **A** | **Continue (review spec)** | Proceed to specification phase      |
+   | 🟢 **B** | **Change feature graph**   | Describe what to change             |
+   | 🟣 **Z** | **Continue autonomously**  | Auto-approve spec and proceed to PR |
+
+   **Wait for explicit user confirmation before proceeding**
 
 ## 4. Execute
 
@@ -72,13 +77,14 @@ Orchestrates feature development following the development process defined in `.
 
 ### Development Process Phase 2: Specification Development 📝
 
-1. Create `.xe/specs/{feature-id}/spec.md` from template
-2. Define WHAT and WHY (user value, business needs), not HOW
-3. Write for non-technical stakeholders and AI code generation
-4. Define platform/integration requirements, not technology constraints
-5. Ensure requirements are testable and success criteria measurable
-6. Incorporate technical debt assessment from Phase 1a into specification
-7. **Human Checkpoint** → Present specification for review:
+1. Loop thru feature dependency tree and create or update every `.xe/specs/{feature-id}/spec.md` feature spec
+   - For new features, use the `.xe/templates/specs/spec.md` template
+   - Define WHAT and WHY (user value, business needs), not HOW
+   - Write for non-technical stakeholders and AI code generation
+   - Define platform/integration requirements, not technology constraints
+   - Ensure requirements are testable and success criteria measurable
+   - Incorporate technical debt assessment from Phase 1 into specification
+2. **Human Checkpoint** → Present specification for review:
 
    |    #     | Option                     | Notes                               |
    | :------: | -------------------------- | ----------------------------------- |
@@ -90,14 +96,15 @@ Orchestrates feature development following the development process defined in `.
 
 ### Development Process Phase 3: Planning 🏗️
 
-1. Research & Design Decisions → Document in `research.md`
-2. Data Model → Define entities (inline in plan.md or separate data-model.md)
-3. Contracts → Define function signatures/APIs and generate contract tests
-4. Implementation Approach → Create `plan.md` with algorithms and integration
-5. Usage Examples → Document consumption patterns
-6. Task Breakdown → Create `tasks.md` with implementation steps
-7. Rollout Orchestration → Update rollout plan with pre/post/cleanup actions
-8. **Human Approval Checkpoint (if not running autonomously)** → Present Data Model, Contracts, and Implementation Approach for review:
+1. Loop thru feature dependency tree and:
+   1. Research & Design Decisions → Document in `research.md`
+   2. Data Model → Define entities (inline in `plan.md` or separate `data-model.md`)
+   3. Contracts → Define function signatures/APIs and generate contract tests
+   4. Implementation Approach → Create `plan.md` with algorithms and integration
+   5. Usage Examples → Document consumption patterns
+   6. Task Breakdown → Create `tasks.md` with implementation steps
+   7. Rollout Orchestration → Update rollout plan with pre/post/cleanup actions
+2. **Human Approval Checkpoint (if not running autonomously)** → Present Data Model, Contracts, and Implementation Approach for review:
 
    |    #     | Option          | Notes                           |
    | :------: | --------------- | ------------------------------- |
@@ -113,7 +120,7 @@ Orchestrates feature development following the development process defined in `.
    - Read `.xe/architecture.md` for system architecture
    - Read `.xe/standards/` for code standards
 2. Execute pre-implementation actions (if any in rollout plan)
-3. Execute `.xe/specs/{feature-id}/tasks.md` implementation checklist
+3. Loop thru feature dependency tree and execute `.xe/specs/{feature-id}/tasks.md` implementation checklist
 4. Execute post-implementation actions (if any in rollout plan)
 5. Complete immediate cleanup actions
 6. Delete rollout plan file when complete
