@@ -1,11 +1,11 @@
 ---
-owner: "Engineer"
+owner: "Architect"
 reviewers:
-  required: []
-  optional: ["Architect", "Product Manager"]
+  required: ["Product Manager"]
+  optional: ["Engineer"]
 ---
 
-# Playbook: Start Rollout (single agent workflow)
+# Playbook: Start Rollout
 
 ## Description
 
@@ -37,6 +37,21 @@ Orchestrates feature development following the development process defined in `.
 
 - Read `.xe/process/development.md` for workflow phases
 - Read `.xe/product.md` for product context
+- **Check for product blueprint:**
+  - If `.xe/specs/blueprint/spec.md` exists:
+    - Read it to understand full product context
+    - Extract this feature's dependencies, scope, and priority from the blueprint
+    - Use blueprint to guide implementation scope and integration points
+    - Identify features this feature depends on (must be implemented first)
+  - If blueprint does NOT exist:
+    - **Prompt user:** "No product blueprint found. This feature may be part of a larger product."
+      - **(A) Create lightweight blueprint** - Quick breakdown of full product (recommended for product features)
+      - **(B) Skip blueprint** - Implement this feature standalone (recommended for one-off tasks/fixes)
+    - If user chooses A:
+      - Ask: "Briefly describe the full product vision and key capabilities (2-3 paragraphs)"
+      - Run minimal blueprint creation (inline, not full start-blueprint playbook)
+      - Create `.xe/specs/blueprint/spec.md` only well-defined features (even if this is the only one)
+      - Continue with current feature as first implementation
 - Scan `.xe/specs/` directory for existing features
 
 ## 3. Research
@@ -46,17 +61,27 @@ Orchestrates feature development following the development process defined in `.
 1. Review product & architecture context
 2. Conduct market research and save in `.xe/competitive-analysis.md` if never documented, >3 months old, or major product pivot
 3. Analyze feature requirements & source code
-4. Think deeply about the requested change and rollout goals
+4. **Check blueprint alignment:**
+   - If blueprint exists (`.xe/specs/blueprint/spec.md`) and this feature is IN the blueprint:
+     - Use blueprint scope as guidance for feature boundaries
+     - Validate dependencies listed in blueprint are already implemented
+     - Update `rollout-blueprint.md` to mark this feature as "In Progress"
+   - If blueprint exists but this feature is NOT in blueprint:
+     - **Pause and prompt user with options:**
+       - **(A) Add to blueprint** - Update blueprint spec to include this feature (requires blueprint PR update)
+       - **(B) Implement as one-off** - Proceed without blueprint tracking (not recommended for product features)
+       - **(C) Cancel** - Stop and update blueprint first
+5. Think deeply about the requested change and rollout goals
    - Determine if rollout creates new features or updates existing features
    - Define a modular design based on `.xe/engineering.md` principles (e.g., Separation of Concerns, Single Responsibility, Don't Repeat Yourself)
-   - Break out sub-features for reuse and maintainability
+   - Break out independently implementable and testable sub-features for reuse and maintainability with clear scope boundaries (1-2 sentences per feature)
    - Identify the primary feature and define a dependency tree
-5. Review existing features in dependency tree and identify technical debt and cleanup opportunities relevant to the current task
+6. Review existing features in dependency tree and identify technical debt and cleanup opportunities relevant to the current task
    - Assess implementation scope: How much additional work to include cleanup?
    - Evaluate risk vs. benefit: Does cleanup justify increased complexity?
    - Determine rollout strategy: Should debt cleanup be pre-implementation, during, or post-implementation?
-6. Document findings in `.xe/specs/{feature-id}/research.md`
-7. **Human Checkpoint** → Present TLDR feature dependency graph for review:
+7. Document findings in `.xe/specs/{feature-id}/research.md`
+8. **Human Checkpoint** → Present TLDR feature dependency graph for review:
 
    |    #     | Option                     | Notes                               |
    | :------: | -------------------------- | ----------------------------------- |
@@ -123,8 +148,12 @@ Orchestrates feature development following the development process defined in `.
 3. Loop thru feature dependency tree and execute `.xe/specs/{feature-id}/tasks.md` implementation checklist
 4. Execute post-implementation actions (if any in rollout plan)
 5. Complete immediate cleanup actions
-6. Delete rollout plan file when complete
-7. Remove entry from `.xe/rollouts/README.md`
+6. **Update blueprint status (if blueprint exists):**
+   - Mark this feature as "Complete" in `.xe/rollouts/rollout-blueprint.md`
+   - Check if all blueprint features are now complete
+   - If all complete, note in rollout-blueprint.md that product build is finished
+7. Delete rollout plan file when complete
+8. Remove entry from `.xe/rollouts/README.md`
 
 ## 5. Verify
 
