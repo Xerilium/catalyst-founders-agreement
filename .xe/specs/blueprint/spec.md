@@ -94,6 +94,79 @@ graph TD
     N --> O
 ```
 
+## Workflow Sequence Diagram
+
+This diagram shows the end-to-end workflow from initialization through finalization:
+
+```mermaid
+sequenceDiagram
+    actor Founder
+    participant Issue as GitHub Issue
+    participant InitWF as init-workflow
+    participant InitScript as init-script
+    participant Progress as progress-tracking
+    participant SecOrch as section-orchestration
+    participant AI as AI Agent
+    participant SecScript as section-script
+    participant FinalWF as finalization-workflow
+    participant Export as export-system
+
+    Founder->>Issue: Create initialization issue
+    Note over Founder,Issue: 8 configuration questions answered
+
+    Issue->>InitWF: Trigger (issue created)
+    InitWF->>InitScript: Execute with issue data
+
+    InitScript->>InitScript: Validate responses against schema
+    InitScript->>InitScript: Create founders-agreement.md from template
+    InitScript->>Progress: createProgressFile(sections[])
+    Progress-->>InitScript: progress.md created
+    InitScript->>InitScript: Save startup-settings.json
+    InitScript->>InitScript: Update CODEOWNERS
+    InitScript-->>InitWF: Success
+
+    InitWF->>Issue: Post summary comment
+    InitWF->>Founder: Create PR with generated files
+
+    Founder->>Founder: Review and merge PR
+
+    Note over Founder,SecOrch: PR merged, triggers section orchestration
+
+    SecOrch->>Progress: getSectionStatus() for all sections
+    Progress-->>SecOrch: List of incomplete sections
+
+    loop For each incomplete section
+        SecOrch->>Issue: Create section issue from template
+        SecOrch->>AI: Assign section issue
+    end
+
+    loop For each section
+        AI->>SecScript: Execute section-script
+        SecScript->>SecScript: Load config from startup-settings.json
+        SecScript->>SecScript: Select snippets based on config
+        SecScript->>SecScript: Assemble section content
+        SecScript->>SecScript: Update founders-agreement.md
+        SecScript->>Progress: updateSectionStatus(sectionId, 'complete')
+        Progress-->>SecScript: Updated
+        SecScript->>AI: Create PR with section changes
+        AI->>Founder: Request review
+        Founder->>Founder: Review and merge section PR
+    end
+
+    Progress->>Progress: All sections complete
+    Progress->>FinalWF: Trigger (all sections done)
+
+    FinalWF->>Progress: isComplete()
+    Progress-->>FinalWF: true
+    FinalWF->>FinalWF: Run validation-system
+    FinalWF->>Export: Execute export-system
+    Export->>Export: Convert MD to PDF
+    Export-->>FinalWF: founders-agreement.pdf
+    FinalWF->>FinalWF: Create GitHub release (ISO date)
+    FinalWF->>FinalWF: Attach PDF to release
+    FinalWF->>Founder: Notify completion
+```
+
 ## Features
 
 ### Tier 0: Foundation (No Dependencies)
