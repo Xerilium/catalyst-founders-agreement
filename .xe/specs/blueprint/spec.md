@@ -6,8 +6,6 @@ This blueprint defines the complete feature roadmap for the Catalyst Founders Ag
 
 The product transforms complex legal document creation into a guided, collaborative workflow where founders answer configuration questions, AI generates contextually appropriate content, and founders iteratively refine sections until consensus is reached. The final output is a professional PDF released with ISO-dated versioning.
 
-**Total Features**: 17 features across 5 dependency tiers
-
 ## Core Entities
 
 **Configuration Profile**
@@ -48,11 +46,11 @@ graph TD
     A[repository-structure]
     B[init-issue-template]
     C[agreement-guide]
+    D[agreement-template]
 
     %% Tier 1: Core Configuration
-    D[startup-config-schema]
-    E[init-script]
-    F[agreement-template]
+    E[startup-config-schema]
+    F[init-script]
     G[content-snippets]
 
     %% Tier 2: Automation
@@ -72,17 +70,16 @@ graph TD
     Q[user-documentation]
 
     %% Dependencies
-    A --> D
     A --> E
     A --> F
-    B --> E
+    B --> F
     C --> G
+    D --> G
+    D --> K
 
-    D --> E
-    E --> H
-    E --> I
-    F --> G
-    F --> K
+    E --> F
+    F --> H
+    F --> I
     G --> K
 
     H --> I
@@ -156,49 +153,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Common scenarios and recommended configurations
 - Glossary of legal and startup terms
 
----
-
-### Tier 1: Core Configuration (Depends on Tier 0)
-
-#### Feature 4: startup-config-schema
-**ID**: `startup-config-schema`
-**Dependencies**: `repository-structure`
-**Complexity**: Small
-**Priority**: 4
-
-**Scope**: JSON schema definition for `.xe/config/startup-settings.json` that validates and stores the startup configuration selected during initialization. Schema defines structure for 8 questions, founder information, and metadata.
-
-**Schema Elements**:
-- Configuration responses (8 questions with selected options)
-- Founder details (names, emails, roles)
-- Repository metadata (creation date, template version)
-- Validation rules for all fields
-
-**Note**: This schema is specific to startup configuration. The repository may have other settings files for different purposes (e.g., AI configurations, workflow settings), but this schema only covers the startup initialization configuration.
-
-#### Feature 5: init-script
-**ID**: `init-script`
-**Dependencies**: `repository-structure`, `init-issue-template`, `startup-config-schema`
-**Complexity**: Large
-**Priority**: 5
-
-**Scope**: TypeScript script that processes initialization issue responses, validates inputs, generates base agreement structure from template, saves configuration to startup-settings.json, and updates CODEOWNERS file.
-
-**Functionality**:
-- Parse issue body and extract question responses
-- Validate responses against startup-config-schema
-- Apply default behaviors based on configuration profile
-- Instantiate `founders-agreement.md` from agreement-template with section placeholders
-- Save configuration to `.xe/config/startup-settings.json`
-- Update `.github/CODEOWNERS` with founder information
-- Generate `progress.md` with section completion tracking
-- Create summary comment on initialization issue
-
-#### Feature 6: agreement-template
+#### Feature 4: agreement-template
 **ID**: `agreement-template`
-**Dependencies**: `repository-structure`
+**Dependencies**: None
 **Complexity**: Medium
-**Priority**: 6
+**Priority**: 4
 
 **Scope**: Markdown template file defining the structure of the founders agreement document with placeholders for sections, founder names, dates, and configuration-driven content.
 
@@ -218,6 +177,44 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Document footer with version and date placeholders
 
 **Usage**: This template is instantiated by init-script and populated by section-script with content from content-snippets based on startup configuration.
+
+---
+
+### Tier 1: Core Configuration (Depends on Tier 0)
+
+#### Feature 5: startup-config-schema
+**ID**: `startup-config-schema`
+**Dependencies**: `repository-structure`
+**Complexity**: Small
+**Priority**: 5
+
+**Scope**: JSON schema definition for `.xe/config/startup-settings.json` that validates and stores the startup configuration selected during initialization. Schema defines structure for 8 questions, founder information, and metadata.
+
+**Schema Elements**:
+- Configuration responses (8 questions with selected options)
+- Founder details (names, emails, roles)
+- Repository metadata (creation date, template version)
+- Validation rules for all fields
+
+**Note**: This schema is specific to startup configuration. The repository may have other settings files for different purposes (e.g., AI configurations, workflow settings), but this schema only covers the startup initialization configuration.
+
+#### Feature 6: init-script
+**ID**: `init-script`
+**Dependencies**: `repository-structure`, `init-issue-template`, `startup-config-schema`
+**Complexity**: Large
+**Priority**: 6
+
+**Scope**: TypeScript script that processes initialization issue responses, validates inputs, generates base agreement structure from template, saves configuration to startup-settings.json, and updates CODEOWNERS file.
+
+**Functionality**:
+- Parse issue body and extract question responses
+- Validate responses against startup-config-schema
+- Apply default behaviors based on configuration profile
+- Instantiate `founders-agreement.md` from agreement-template with section placeholders
+- Save configuration to `.xe/config/startup-settings.json`
+- Update `.github/CODEOWNERS` with founder information
+- Generate `progress.md` with section completion tracking
+- Create summary comment on initialization issue
 
 #### Feature 7: content-snippets
 **ID**: `content-snippets`
@@ -473,7 +470,7 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 ## Success Criteria
 
-- [ ] All 17 features documented with unique IDs
+- [ ] All features documented with unique IDs
 - [ ] Feature dependency graph is acyclic and correctly represents dependencies
 - [ ] Features are organized into 5 dependency tiers
 - [ ] Each feature has scope description (1-2 sentences)
@@ -487,8 +484,8 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 Features will be implemented using `/catalyst:run start-rollout {feature-id}` for each feature in dependency order. Features within the same tier can be implemented in parallel if multiple developers are available.
 
 **Recommended Implementation Order**:
-1. Tier 0 features (parallel): repository-structure, init-issue-template, agreement-guide
-2. Tier 1 features (sequential): startup-config-schema → init-script and agreement-template → content-snippets
+1. Tier 0 features (parallel): repository-structure, init-issue-template, agreement-guide, agreement-template
+2. Tier 1 features (sequential): startup-config-schema → init-script, then content-snippets
 3. Tier 2 features (sequential): init-workflow → section-orchestration → section-templates
 4. Tier 3 features (parallel): section-script, ai-guidance, validation-system
 5. Tier 4 features (sequential): finalization-workflow → export-system → progress-tracking → user-documentation

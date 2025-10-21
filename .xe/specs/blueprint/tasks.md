@@ -10,7 +10,7 @@ description: "This document defines the tasks required to fully implement all fe
 **Input**: Blueprint specification from `.xe/specs/blueprint/spec.md`
 **Prerequisites**: Blueprint spec.md, plan.md, research.md
 
-**Note**: This tasks.md represents the IMPLEMENTATION of all 16 features defined in the blueprint, not the creation of the blueprint specification itself. The blueprint specification was completed during the Analysis and Specification phases. Implementation executes each feature using `/catalyst:run start-rollout {feature-id}`.
+**Note**: This tasks.md represents the IMPLEMENTATION of all features defined in the blueprint, not the creation of the blueprint specification itself. The blueprint specification was completed during the Analysis and Specification phases. Implementation executes each feature using `/catalyst:run start-rollout {feature-id}`.
 
 ## Feature Implementation Status
 
@@ -20,11 +20,11 @@ Track the implementation status of all features defined in the blueprint. Update
 - [ ] T001: Implement `repository-structure` feature
 - [ ] T002: Implement `init-issue-template` feature
 - [ ] T003: Implement `agreement-guide` feature
+- [ ] T004: Implement `agreement-template` feature
 
 ### Tier 1: Core Configuration
-- [ ] T004: Implement `startup-config-schema` feature
-- [ ] T005: Implement `init-script` feature
-- [ ] T006: Implement `agreement-template` feature
+- [ ] T005: Implement `startup-config-schema` feature
+- [ ] T006: Implement `init-script` feature
 - [ ] T007: Implement `content-snippets` feature
 
 ### Tier 2: Automation
@@ -46,16 +46,16 @@ Track the implementation status of all features defined in the blueprint. Update
 ## Dependencies
 
 **Tier-based dependencies:**
-- All Tier 0 features (T001-T003) can be implemented in parallel (no dependencies)
-- Tier 1 features (T004-T007) depend on Tier 0 completion
+- All Tier 0 features (T001-T004) can be implemented in parallel (no dependencies)
+- Tier 1 features (T005-T007) depend on Tier 0 completion
 - Tier 2 features (T008-T010) depend on Tier 1 completion
 - Tier 3 features (T011-T013) depend on Tier 2 completion
 - Tier 4 features (T014-T017) depend on Tier 3 completion
 
 **Feature-specific dependencies:**
-- T004 (`startup-config-schema`) blocks T005 (`init-script`)
-- T005 (`init-script`) blocks T008 (`init-workflow`)
-- T006 (`agreement-template`) consumed by T007 (`content-snippets`) and T011 (`section-script`)
+- T005 (`startup-config-schema`) blocks T006 (`init-script`)
+- T006 (`init-script`) blocks T008 (`init-workflow`)
+- T004 (`agreement-template`) consumed by T007 (`content-snippets`) and T011 (`section-script`)
 - T007 (`content-snippets`) blocks T011 (`section-script`)
 - T008 (`init-workflow`) blocks T009 (`section-orchestration`)
 - T009 (`section-orchestration`) blocks T010 (`section-templates`)

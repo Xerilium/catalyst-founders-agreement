@@ -6,7 +6,7 @@
 
 ## Summary
 
-The blueprint feature defines the complete product roadmap by analyzing the product vision and breaking it down into 16 discrete, implementable features with clear dependencies and priorities. This implementation populates `.xe/specs/blueprint/spec.md` with the feature catalog, dependency graph, complexity estimates, and implementation approach—serving as the architectural north star for all subsequent feature development. The blueprint enables systematic product delivery by identifying which features can be built in parallel and which must be completed sequentially.
+The blueprint feature defines the complete product roadmap by analyzing the product vision and breaking it down into discrete, implementable features with clear dependencies and priorities. This implementation populates `.xe/specs/blueprint/spec.md` with the feature catalog, dependency graph, complexity estimates, and implementation approach—serving as the architectural north star for all subsequent feature development. The blueprint enables systematic product delivery by identifying which features can be built in parallel and which must be completed sequentially.
 
 **Design rationale**: See [research.md](./research.md) for detailed feature breakdown analysis, dependency tier structure, and architectural alignment decisions.
 
@@ -32,9 +32,9 @@ This feature implementation plan extends the technical architecture defined in [
 
 ```
 .xe/specs/blueprint/
-├── spec.md        # Feature catalog with dependency graph (17 features across 5 tiers)
+├── spec.md        # Feature catalog with dependency graph across 5 tiers
 ├── plan.md        # This implementation plan
-├── tasks.md       # Implementation tasks (T001-T017, one per feature)
+├── tasks.md       # Implementation tasks (one per feature)
 └── research.md    # Product analysis and feature breakdown rationale
 ```
 
@@ -44,32 +44,30 @@ This feature implementation plan extends the technical architecture defined in [
 
 See the complete dependency graph in [spec.md](./spec.md#feature-dependency-graph).
 
-The graph visualizes relationships between all 17 features across 5 tiers:
-- **Tier 0**: Foundation (3 features, no dependencies)
-- **Tier 1**: Core Configuration (4 features, depend on Tier 0)
-- **Tier 2**: Automation (3 features, depend on Tier 1)
-- **Tier 3**: Section Processing (3 features, depend on Tier 2)
-- **Tier 4**: Finalization (4 features, depend on Tier 3)
+The graph visualizes relationships between all features across 5 tiers:
+- **Tier 0**: Foundation (no dependencies)
+- **Tier 1**: Core Configuration (depend on Tier 0)
+- **Tier 2**: Automation (depend on Tier 1)
+- **Tier 3**: Section Processing (depend on Tier 2)
+- **Tier 4**: Finalization (depend on Tier 3)
 
 ---
 
 ## Data Model
 
-**Not applicable** - Blueprints define features but do not implement runtime data models. Each feature defined in this blueprint will have its own data model documented in its respective spec.
+Not applicable
 
 ---
 
 ## Contracts
 
-**Not applicable** - Blueprints define features but do not implement contracts. Each feature defined in this blueprint will have its own contracts documented in its respective spec.
+Not applicable
 
 ---
 
 ## Implementation Approach
 
-**Not applicable** - The blueprint itself is a specification document created during the Analysis/Specification phases. Implementation happens when each of the 17 features is built via `/catalyst:run start-rollout {feature-id}`.
-
-See [tasks.md](./tasks.md) for the feature implementation task list.
+Not applicable
 
 ---
 
@@ -200,7 +198,7 @@ graph TD
 
 **Manual Validation:**
 
-- Verify all 16 features documented
+- Verify all features documented
 - Verify each feature has all required fields (ID, dependencies, complexity, priority, scope)
 - Verify dependency graph is acyclic (no circular dependencies)
 - Verify features are organized into correct tiers based on dependencies
@@ -225,4 +223,4 @@ graph TD
 
 ## Usage Examples
 
-**Not applicable** - The blueprint is a specification document, not an executable feature. Usage examples are provided for the 17 features defined within the blueprint, documented in their respective specs.
+Not applicable
