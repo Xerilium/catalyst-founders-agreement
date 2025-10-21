@@ -32,107 +32,48 @@ This feature implementation plan extends the technical architecture defined in [
 
 ```
 .xe/specs/blueprint/
-├── spec.md        # Feature catalog with dependency graph (created by this feature)
+├── spec.md        # Feature catalog with dependency graph (17 features across 5 tiers)
 ├── plan.md        # This implementation plan
-├── tasks.md       # Implementation task breakdown
+├── tasks.md       # Implementation tasks (T001-T017, one per feature)
 └── research.md    # Product analysis and feature breakdown rationale
 ```
 
 ---
 
+## Feature Dependency Graph
+
+See the complete dependency graph in [spec.md](./spec.md#feature-dependency-graph).
+
+The graph visualizes relationships between all 17 features across 5 tiers:
+- **Tier 0**: Foundation (3 features, no dependencies)
+- **Tier 1**: Core Configuration (4 features, depend on Tier 0)
+- **Tier 2**: Automation (3 features, depend on Tier 1)
+- **Tier 3**: Section Processing (3 features, depend on Tier 2)
+- **Tier 4**: Finalization (4 features, depend on Tier 3)
+
+---
+
 ## Data Model
 
-**Entities owned by this feature:**
-
-- **Feature**: Discrete product capability with clear scope and implementation requirements
-  - `id`: string (kebab-case unique identifier)
-  - `title`: string (friendly display name)
-  - `dependencies`: array of feature IDs this depends on
-  - `complexity`: 'Small' | 'Medium' | 'Large' (time estimate category)
-  - `priority`: number (implementation order)
-  - `scope`: string (1-2 sentence description)
-  - `tier`: number (dependency tier 0-4, derived from dependencies)
-
-- **Dependency Graph**: Visual representation of feature relationships
-  - Format: Mermaid diagram embedded in markdown
-  - Nodes: Feature IDs
-  - Edges: Dependency relationships (A → B means B depends on A)
-  - Constraint: MUST be acyclic (no circular dependencies)
-
-- **Implementation Approach**: Recommended rollout strategy
-  - Feature implementation order
-  - Parallelization opportunities
-  - Timeline estimates
-
-**Entities from other features:**
-
-- **Product Vision**: High-level product description (.xe/product.md)
-- **Architecture Guidelines**: Technical constraints and patterns (.xe/architecture.md)
-- **Engineering Principles**: Code quality standards (.xe/engineering.md)
+**Not applicable** - Blueprints define features but do not implement runtime data models. Each feature defined in this blueprint will have its own data model documented in its respective spec.
 
 ---
 
 ## Contracts
 
-### Blueprint Specification Document
-
-**Location:** `.xe/specs/blueprint/spec.md`
-
-**Purpose:** Canonical definition of all product features with dependencies, priorities, and scope
-
-**Structure:**
-
-```markdown
-# Blueprint: {product-name}
-
-## Description
-[Product overview and blueprint purpose]
-
-## Core Entities
-[Key data structures and concepts across all features]
-
-## Feature Dependency Graph
-[Mermaid diagram showing feature relationships]
-
-## Features
-
-### Tier {N}: {Tier Name}
-
-#### Feature {N}: {feature-name}
-**ID**: `{feature-id}`
-**Dependencies**: [{list-of-feature-ids}]
-**Complexity**: {Small|Medium|Large}
-**Priority**: {number}
-
-**Scope**: {1-2 sentence description}
-
-**Deliverables**:
-- {Specific output 1}
-- {Specific output 2}
-
-[Additional detail as needed]
-
-## Success Criteria
-[Measurable conditions for blueprint completeness]
-
-## Implementation Approach
-[Recommended feature implementation order and timeline]
-```
-
-**Validation Rules:**
-
-- All features have unique IDs (kebab-case)
-- All features have dependencies list (empty array if none)
-- All features have complexity estimate
-- All features have priority number
-- All features have scope description
-- Dependency graph is present and acyclic
-- Dependency graph includes all feature IDs
-- Features are organized into numbered tiers
+**Not applicable** - Blueprints define features but do not implement contracts. Each feature defined in this blueprint will have its own contracts documented in its respective spec.
 
 ---
 
 ## Implementation Approach
+
+**Not applicable** - The blueprint itself is a specification document created during the Analysis/Specification phases. Implementation happens when each of the 17 features is built via `/catalyst:run start-rollout {feature-id}`.
+
+See [tasks.md](./tasks.md) for the feature implementation task list.
+
+---
+
+## Blueprint Generation Methodology
 
 ### 1. Data Structures
 
@@ -222,22 +163,22 @@ graph TD
    - Identify parallelization opportunities
    - Estimate timeline based on complexity
 
-### 3. Integration Points
+### 3. How the Blueprint is Used
 
 **Consumed by:**
 
-- `start-rollout` playbook: Reads blueprint spec for feature context when implementing individual features
-- Product managers: Use blueprint for roadmap planning and prioritization
-- Engineers: Reference blueprint to understand feature relationships and implementation order
+- `start-rollout` playbook: Reads spec.md for feature context when implementing individual features
+- Product managers: Use spec.md for roadmap planning and prioritization
+- Engineers: Reference spec.md to understand feature relationships and implementation order
 
-**Depends on:**
+**Blueprint creation depends on:**
 
 - `.xe/product.md`: Product vision and goals
 - `.xe/architecture.md`: Technical constraints and patterns
 - `.xe/engineering.md`: Code quality and design principles
-- `.xe/process/development.md`: Development workflow and phases
+- Blueprint description input provided to `start-blueprint` playbook
 
-### 4. Error Handling
+### 4. Validation During Blueprint Creation
 
 **Missing Context:**
 - If `.xe/product.md` missing: Halt and notify user (required dependency)
@@ -255,17 +196,7 @@ graph TD
 - Features too broad: Suggest splitting into sub-features
 - Unclear dependencies: Request clarification on feature relationships
 
-### 5. Performance Considerations
-
-Not applicable - this is a documentation/specification feature with no runtime performance requirements.
-
-**Optimization for AI processing:**
-- Keep feature descriptions concise (1-2 sentences)
-- Use consistent formatting for easier parsing
-- Use mermaid for dependency graph (widely supported)
-- Use kebab-case IDs (easy to reference, URL-safe)
-
-### 6. Testing Strategy
+### 5. Quality Assurance
 
 **Manual Validation:**
 
@@ -294,48 +225,4 @@ Not applicable - this is a documentation/specification feature with no runtime p
 
 ## Usage Examples
 
-**Reading the blueprint during feature implementation:**
-
-```bash
-# When implementing a specific feature, read blueprint for context
-/catalyst:run start-rollout init-script
-
-# AI will read .xe/specs/blueprint/spec.md to understand:
-# - Feature scope and deliverables
-# - Feature dependencies (what must be built first)
-# - Feature complexity (time estimate)
-# - How this feature fits into overall product
-```
-
-**Using the dependency graph for planning:**
-
-Product managers can review the dependency graph to:
-- Identify which features can be built in parallel
-- Understand which features block others
-- Plan sprint capacity based on complexity estimates
-- Visualize product build sequence
-
-**Tracking implementation progress:**
-
-```markdown
-# In .xe/rollouts/rollout-blueprint.md
-
-## Feature Status
-
-### Tier 0 (Foundation)
-- [x] repository-structure (complete)
-- [x] init-issue-template (complete)
-- [ ] agreement-guide (in progress)
-
-### Tier 1 (Core Configuration)
-- [ ] settings-schema (not started)
-- [ ] init-script (not started)
-- [ ] snippet-library (not started)
-```
-
-**Querying features by dependency tier:**
-
-Engineers can identify parallelization opportunities:
-- Tier 0 features can be built in any order (no dependencies)
-- Tier 1 features can be built in parallel once Tier 0 complete
-- Tier 2 features depend on Tier 1, etc.
+**Not applicable** - The blueprint is a specification document, not an executable feature. Usage examples are provided for the 17 features defined within the blueprint, documented in their respective specs.
