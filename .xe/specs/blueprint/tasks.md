@@ -23,43 +23,44 @@ Track the implementation status of all features defined in the blueprint. Update
 - [ ] T004: Implement `agreement-template` feature
 
 ### Tier 1: Core Configuration
-- [ ] T005: Implement `startup-config-schema` feature
-- [ ] T006: Implement `init-script` feature
-- [ ] T007: Implement `content-snippets` feature
+- [ ] T005: Implement `init-script` feature (includes startup-config schema)
+- [ ] T006: Implement `agreement-content` feature (includes content snippets and section templates)
+- [ ] T007: Implement `progress-tracking` feature
 
 ### Tier 2: Automation
 - [ ] T008: Implement `init-workflow` feature
 - [ ] T009: Implement `section-orchestration` feature
-- [ ] T010: Implement `section-templates` feature
 
 ### Tier 3: Section Processing
-- [ ] T011: Implement `section-script` feature
-- [ ] T012: Implement `ai-guidance` feature
-- [ ] T013: Implement `validation-system` feature
+- [ ] T010: Implement `section-script` feature
+- [ ] T011: Implement `ai-guidance` feature
+- [ ] T012: Implement `validation-system` feature
 
 ### Tier 4: Finalization
-- [ ] T014: Implement `finalization-workflow` feature
-- [ ] T015: Implement `export-system` feature
-- [ ] T016: Implement `progress-tracking` feature
-- [ ] T017: Implement `user-documentation` feature
+- [ ] T013: Implement `finalization-workflow` feature
+- [ ] T014: Implement `export-system` feature
+- [ ] T015: Implement `user-documentation` feature
 
 ## Dependencies
 
 **Tier-based dependencies:**
 - All Tier 0 features (T001-T004) can be implemented in parallel (no dependencies)
 - Tier 1 features (T005-T007) depend on Tier 0 completion
-- Tier 2 features (T008-T010) depend on Tier 1 completion
-- Tier 3 features (T011-T013) depend on Tier 2 completion
-- Tier 4 features (T014-T017) depend on Tier 3 completion
+- Tier 2 features (T008-T009) depend on Tier 1 completion
+- Tier 3 features (T010-T012) depend on Tier 2 completion
+- Tier 4 features (T013-T015) depend on Tier 3 completion
 
 **Feature-specific dependencies:**
-- T005 (`startup-config-schema`) blocks T006 (`init-script`)
-- T006 (`init-script`) blocks T008 (`init-workflow`)
-- T004 (`agreement-template`) consumed by T007 (`content-snippets`) and T011 (`section-script`)
-- T007 (`content-snippets`) blocks T011 (`section-script`)
+- T001 (`repository-structure`) blocks T005 (`init-script`) and T007 (`progress-tracking`)
+- T002 (`init-issue-template`) blocks T005 (`init-script`)
+- T003 (`agreement-guide`) blocks T006 (`agreement-content`)
+- T004 (`agreement-template`) blocks T006 (`agreement-content`) and T010 (`section-script`)
+- T005 (`init-script`) blocks T008 (`init-workflow`)
+- T006 (`agreement-content`) blocks T010 (`section-script`)
+- T007 (`progress-tracking`) blocks T008 (`init-workflow`), T009 (`section-orchestration`), T010 (`section-script`), and T013 (`finalization-workflow`)
 - T008 (`init-workflow`) blocks T009 (`section-orchestration`)
-- T009 (`section-orchestration`) blocks T010 (`section-templates`)
-- T010 (`section-templates`) blocks T011 (`section-script`)
-- T011 (`section-script`) blocks T014 (`finalization-workflow`)
-- T013 (`validation-system`) blocks T014 (`finalization-workflow`)
-- T014 (`finalization-workflow`) blocks T015 (`export-system`)
+- T009 (`section-orchestration`) blocks T010 (`section-script`)
+- T010 (`section-script`) blocks T013 (`finalization-workflow`)
+- T012 (`validation-system`) blocks T013 (`finalization-workflow`)
+- T013 (`finalization-workflow`) blocks T014 (`export-system`)
+- T014 (`export-system`) blocks T015 (`user-documentation`)
