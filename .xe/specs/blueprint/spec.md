@@ -6,6 +6,8 @@ This blueprint defines the complete feature roadmap for the Catalyst Founders Ag
 
 The product transforms complex legal document creation into a guided, collaborative workflow where founders answer configuration questions, AI generates contextually appropriate content, and founders iteratively refine sections until consensus is reached. The final output is a professional PDF released with ISO-dated versioning.
 
+**Total Features**: 17 features across 5 dependency tiers
+
 ## Core Entities
 
 **Configuration Profile**
@@ -48,49 +50,52 @@ graph TD
     C[agreement-guide]
 
     %% Tier 1: Core Configuration
-    D[settings-schema]
+    D[startup-config-schema]
     E[init-script]
-    F[snippet-library]
+    F[agreement-template]
+    G[content-snippets]
 
     %% Tier 2: Automation
-    G[init-workflow]
-    H[section-orchestration]
-    I[section-templates]
+    H[init-workflow]
+    I[section-orchestration]
+    J[section-templates]
 
     %% Tier 3: Section Processing
-    J[section-script]
-    K[ai-instructions]
-    L[validation-system]
+    K[section-script]
+    L[ai-guidance]
+    M[validation-system]
 
     %% Tier 4: Finalization
-    M[finalization-workflow]
-    N[export-system]
-    O[progress-tracking]
-    P[documentation]
+    N[finalization-workflow]
+    O[export-system]
+    P[progress-tracking]
+    Q[user-documentation]
 
     %% Dependencies
     A --> D
     A --> E
     A --> F
     B --> E
-    C --> F
+    C --> G
 
     D --> E
-    E --> G
     E --> H
-    F --> J
+    E --> I
+    F --> G
+    F --> K
+    G --> K
 
-    G --> H
     H --> I
     I --> J
+    J --> K
 
-    J --> M
-    K --> J
-    L --> M
-
+    K --> N
+    L --> K
     M --> N
-    M --> O
+
+    N --> O
     N --> P
+    O --> Q
 ```
 
 ## Features
@@ -155,13 +160,13 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 ### Tier 1: Core Configuration (Depends on Tier 0)
 
-#### Feature 4: settings-schema
-**ID**: `settings-schema`
+#### Feature 4: startup-config-schema
+**ID**: `startup-config-schema`
 **Dependencies**: `repository-structure`
 **Complexity**: Small
 **Priority**: 4
 
-**Scope**: JSON schema definition for `.xe/config/settings.json` that validates and stores the startup configuration selected during initialization. Schema defines structure for 8 questions, founder information, and metadata.
+**Scope**: JSON schema definition for `.xe/config/startup-settings.json` that validates and stores the startup configuration selected during initialization. Schema defines structure for 8 questions, founder information, and metadata.
 
 **Schema Elements**:
 - Configuration responses (8 questions with selected options)
@@ -169,33 +174,60 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Repository metadata (creation date, template version)
 - Validation rules for all fields
 
+**Note**: This schema is specific to startup configuration. The repository may have other settings files for different purposes (e.g., AI configurations, workflow settings), but this schema only covers the startup initialization configuration.
+
 #### Feature 5: init-script
 **ID**: `init-script`
-**Dependencies**: `repository-structure`, `init-issue-template`, `settings-schema`
+**Dependencies**: `repository-structure`, `init-issue-template`, `startup-config-schema`
 **Complexity**: Large
 **Priority**: 5
 
-**Scope**: TypeScript script that processes initialization issue responses, validates inputs, generates base agreement structure, saves configuration to settings.json, and updates CODEOWNERS file.
+**Scope**: TypeScript script that processes initialization issue responses, validates inputs, generates base agreement structure from template, saves configuration to startup-settings.json, and updates CODEOWNERS file.
 
 **Functionality**:
 - Parse issue body and extract question responses
-- Validate responses against schema
+- Validate responses against startup-config-schema
 - Apply default behaviors based on configuration profile
-- Generate initial `founders-agreement.md` with section placeholders
-- Save configuration to `.xe/config/settings.json`
+- Instantiate `founders-agreement.md` from agreement-template with section placeholders
+- Save configuration to `.xe/config/startup-settings.json`
 - Update `.github/CODEOWNERS` with founder information
 - Generate `progress.md` with section completion tracking
 - Create summary comment on initialization issue
 
-#### Feature 6: snippet-library
-**ID**: `snippet-library`
-**Dependencies**: `repository-structure`, `agreement-guide`
+#### Feature 6: agreement-template
+**ID**: `agreement-template`
+**Dependencies**: `repository-structure`
 **Complexity**: Medium
 **Priority**: 6
 
-**Scope**: Predefined markdown content snippets organized by section and configuration option in `.xe/snippets/{section}/{option}.md`. Each snippet contains legally-informed content appropriate for specific configuration combinations.
+**Scope**: Markdown template file defining the structure of the founders agreement document with placeholders for sections, founder names, dates, and configuration-driven content.
 
-**Snippet Categories**:
+**Template Structure**:
+- Document header with title and metadata placeholders
+- Introduction section with purpose statement
+- Placeholders for 8 core agreement sections:
+  - Equity split and ownership
+  - Vesting schedules and acceleration
+  - IP assignment and licensing
+  - Governance and decision-making
+  - Roles and responsibilities
+  - Capital contributions
+  - Exit provisions and buyouts
+  - Dispute resolution
+- Signature blocks with founder name placeholders
+- Document footer with version and date placeholders
+
+**Usage**: This template is instantiated by init-script and populated by section-script with content from content-snippets based on startup configuration.
+
+#### Feature 7: content-snippets
+**ID**: `content-snippets`
+**Dependencies**: `agreement-guide`, `agreement-template`
+**Complexity**: Medium
+**Priority**: 7
+
+**Scope**: Predefined markdown content snippets organized by section and configuration option in `.xe/snippets/{section}/{option}.md`. Each snippet contains legally-informed content appropriate for specific configuration combinations that populate the agreement-template sections.
+
+**Snippet Categories** (aligned with agreement-template sections):
 - Equity split models (equal, weighted, dynamic)
 - Vesting schedules (standard, custom, none)
 - IP assignment clauses
@@ -211,11 +243,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 ### Tier 2: Automation (Depends on Tier 1)
 
-#### Feature 7: init-workflow
+#### Feature 8: init-workflow
 **ID**: `init-workflow`
-**Dependencies**: `init-script`, `settings-schema`
+**Dependencies**: `init-script`, `startup-config-schema`
 **Complexity**: Large
-**Priority**: 7
+**Priority**: 8
 
 **Scope**: GitHub Action workflow that triggers when initialization issue is created/updated, executes init-script, and orchestrates the initialization process.
 
@@ -232,11 +264,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 6. Post summary comment with next steps
 7. Close initialization issue when PR merged
 
-#### Feature 8: section-orchestration
+#### Feature 9: section-orchestration
 **ID**: `section-orchestration`
 **Dependencies**: `init-workflow`, `section-templates`
 **Complexity**: Large
-**Priority**: 8
+**Priority**: 9
 
 **Scope**: GitHub Action workflow that detects when `founders-agreement.md` is created (post-initialization) and automatically creates section-specific issues for each agreement section, assigning them to AI.
 
@@ -248,15 +280,15 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Read agreement structure and identify sections
 - For each incomplete section, create issue from section template
 - Assign issue to configured AI agent (e.g., copilot-swe-agent)
-- Add section context and configuration from settings.json
+- Add section context and configuration from startup-settings.json
 - Include explicit instructions for which script to run
 - Track created issues in `progress.md`
 
-#### Feature 9: section-templates
+#### Feature 10: section-templates
 **ID**: `section-templates`
 **Dependencies**: `repository-structure`, `init-workflow`
 **Complexity**: Medium
-**Priority**: 9
+**Priority**: 10
 
 **Scope**: Dynamic issue templates for each agreement section (equity, vesting, IP, governance, etc.) with targeted instructions for AI on how to complete the section using the section-script.
 
@@ -282,20 +314,20 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 ### Tier 3: Section Processing (Depends on Tier 2)
 
-#### Feature 10: section-script
+#### Feature 11: section-script
 **ID**: `section-script`
-**Dependencies**: `snippet-library`, `section-orchestration`, `settings-schema`
+**Dependencies**: `content-snippets`, `agreement-template`, `section-orchestration`, `startup-config-schema`
 **Complexity**: Large
-**Priority**: 10
+**Priority**: 11
 
 **Scope**: TypeScript script that reads configuration, selects appropriate snippets, assembles section content, and updates `founders-agreement.md` with the completed section.
 
 **Functionality**:
 - Read section ID from script arguments
-- Load configuration from settings.json
+- Load configuration from startup-settings.json
 - Determine which snippets to use based on configuration
-- Assemble section content from snippets
-- Insert section content into correct location in agreement
+- Assemble section content from content-snippets
+- Insert section content into correct location in agreement (based on agreement-template structure)
 - Update progress.md to mark section complete
 - Generate PR with section changes
 - Validate section completeness
@@ -306,11 +338,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Merge multiple snippets when required
 - Apply variable substitution (founder names, dates, etc.)
 
-#### Feature 11: ai-instructions
-**ID**: `ai-instructions`
+#### Feature 12: ai-guidance
+**ID**: `ai-guidance`
 **Dependencies**: `agreement-guide`
 **Complexity**: Medium
-**Priority**: 11
+**Priority**: 12
 
 **Scope**: Tuned instruction files for GitHub Copilot and future AI agents that guide collaborative behavior, tone, and approach when answering founder questions about agreement options.
 
@@ -327,11 +359,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - `.github/copilot-instructions.md`
 - Future: `.xe/ai/` directory for agent-specific instructions
 
-#### Feature 12: validation-system
+#### Feature 13: validation-system
 **ID**: `validation-system`
-**Dependencies**: `settings-schema`, `section-script`
+**Dependencies**: `startup-config-schema`, `section-script`
 **Complexity**: Large
-**Priority**: 12
+**Priority**: 13
 
 **Scope**: TypeScript validation utilities that check agreement completeness, section consistency, configuration validity, and readiness for finalization.
 
@@ -353,11 +385,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 ### Tier 4: Finalization (Depends on Tier 3)
 
-#### Feature 13: finalization-workflow
+#### Feature 14: finalization-workflow
 **ID**: `finalization-workflow`
 **Dependencies**: `validation-system`, `section-script`
 **Complexity**: Large
-**Priority**: 13
+**Priority**: 14
 
 **Scope**: GitHub Action workflow that triggers when all sections are complete, runs final validation, executes export-system, creates GitHub release with ISO date version, and attaches PDF.
 
@@ -376,11 +408,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 8. Archive all section issues
 9. Clean up temporary files
 
-#### Feature 14: export-system
+#### Feature 15: export-system
 **ID**: `export-system`
 **Dependencies**: `finalization-workflow`, `validation-system`
 **Complexity**: Large
-**Priority**: 14
+**Priority**: 15
 
 **Scope**: TypeScript script that converts `founders-agreement.md` to professional PDF format with proper styling, formatting, and legal document conventions.
 
@@ -399,11 +431,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Custom CSS for legal document formatting
 - Ensure reproducible, deterministic output
 
-#### Feature 15: progress-tracking
+#### Feature 16: progress-tracking
 **ID**: `progress-tracking`
 **Dependencies**: `section-orchestration`
 **Complexity**: Small
-**Priority**: 15
+**Priority**: 16
 
 **Scope**: Visual progress indicators in `progress.md` that show which sections are complete, in progress, or not started. Updated automatically by workflows and scripts.
 
@@ -419,13 +451,13 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Rendered in GitHub's markdown UI with checkboxes
 - Consumed by finalization-workflow to determine readiness
 
-#### Feature 16: documentation
-**ID**: `documentation`
+#### Feature 17: user-documentation
+**ID**: `user-documentation`
 **Dependencies**: `export-system`
 **Complexity**: Medium
-**Priority**: 16
+**Priority**: 17
 
-**Scope**: Complete end-user product documentation in `docs/` covering how to use the template, customize agreements, understand workflows, and troubleshoot issues.
+**Scope**: Complete end-user product documentation in `docs/` covering how to use the template, customize agreements, understand workflows, and troubleshoot issues. This is the instructional guide that walks founders through the initialization questions and helps them understand their options.
 
 **Documentation Files**:
 - `docs/README.md` - Overview and quick start
@@ -441,7 +473,7 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 ## Success Criteria
 
-- [ ] All 16 features documented with unique IDs
+- [ ] All 17 features documented with unique IDs
 - [ ] Feature dependency graph is acyclic and correctly represents dependencies
 - [ ] Features are organized into 5 dependency tiers
 - [ ] Each feature has scope description (1-2 sentences)
@@ -456,9 +488,9 @@ Features will be implemented using `/catalyst:run start-rollout {feature-id}` fo
 
 **Recommended Implementation Order**:
 1. Tier 0 features (parallel): repository-structure, init-issue-template, agreement-guide
-2. Tier 1 features (sequential): settings-schema → init-script → snippet-library
+2. Tier 1 features (sequential): startup-config-schema → init-script and agreement-template → content-snippets
 3. Tier 2 features (sequential): init-workflow → section-orchestration → section-templates
-4. Tier 3 features (parallel): section-script, ai-instructions, validation-system
-5. Tier 4 features (sequential): finalization-workflow → export-system → progress-tracking → documentation
+4. Tier 3 features (parallel): section-script, ai-guidance, validation-system
+5. Tier 4 features (sequential): finalization-workflow → export-system → progress-tracking → user-documentation
 
-Total estimated timeline: 12-16 weeks with 1 full-time developer, 6-8 weeks with 2 developers working in parallel on independent tiers.
+Total estimated timeline: 12-18 weeks with 1 full-time developer, 6-9 weeks with 2 developers working in parallel on independent tiers.

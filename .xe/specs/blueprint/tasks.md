@@ -2,110 +2,64 @@
 id: blueprint
 title: Blueprint
 author: flanakin
-description: "This document defines the tasks required to fully implement the blueprint feature from scratch."
+description: "This document defines the tasks required to fully implement all features in the blueprint."
 ---
 
 # Tasks: Blueprint
 
-**Input**: Design documents from `.xe/specs/blueprint/`
-**Prerequisites**: plan.md (required), research.md
+**Input**: Blueprint specification from `.xe/specs/blueprint/spec.md`
+**Prerequisites**: Blueprint spec.md, plan.md, research.md
 
-## Step 1: Setup
+**Note**: This tasks.md represents the IMPLEMENTATION of all 16 features defined in the blueprint, not the creation of the blueprint specification itself. The blueprint specification was completed during the Analysis and Specification phases. Implementation executes each feature using `/catalyst:run start-rollout {feature-id}`.
 
-- [ ] T001: Create `.xe/specs/blueprint/` directory structure
-- [ ] T002: Create placeholder files (spec.md, plan.md, tasks.md, research.md)
+## Feature Implementation Status
 
-## Step 2: Research & Analysis
+Track the implementation status of all features defined in the blueprint. Update as features are completed via `/catalyst:run start-rollout {feature-id}`.
 
-- [ ] T003: Read `.xe/product.md` for product vision and goals
-- [ ] T004: Read `.xe/architecture.md` for technical constraints
-- [ ] T005: Read `.xe/engineering.md` for design principles
-- [ ] T006: Analyze blueprint description for product scope and requirements
-- [ ] T007: Identify core user journeys (initialization, section completion, collaboration, finalization)
-- [ ] T008: Extract core domain entities (Configuration Profile, Agreement Document, Content Snippet, etc.)
-- [ ] T009: Document research findings in `research.md` with date
+### Tier 0: Foundation
+- [ ] T001: Implement `repository-structure` feature
+- [ ] T002: Implement `init-issue-template` feature
+- [ ] T003: Implement `agreement-guide` feature
 
-## Step 3: Feature Decomposition
+### Tier 1: Core Configuration
+- [ ] T004: Implement `startup-config-schema` feature
+- [ ] T005: Implement `init-script` feature
+- [ ] T006: Implement `agreement-template` feature
+- [ ] T007: Implement `content-snippets` feature
 
-- [ ] T010: Break product into discrete, implementable features following SOLID principles
-- [ ] T011: Define feature scope descriptions (1-2 sentences each, clear and unambiguous)
-- [ ] T012: Assign unique kebab-case IDs to all features
-- [ ] T013: Ensure each feature has single responsibility and clear boundaries
-- [ ] T014: Validate features are independently testable and implementable
+### Tier 2: Automation
+- [ ] T008: Implement `init-workflow` feature
+- [ ] T009: Implement `section-orchestration` feature
+- [ ] T010: Implement `section-templates` feature
 
-## Step 4: Dependency Analysis
+### Tier 3: Section Processing
+- [ ] T011: Implement `section-script` feature
+- [ ] T012: Implement `ai-guidance` feature
+- [ ] T013: Implement `validation-system` feature
 
-- [ ] T015: For each feature, identify prerequisite features
-- [ ] T016: Build dependency relationship map
-- [ ] T017: Validate no circular dependencies exist (use topological sort if needed)
-- [ ] T018: Assign features to dependency tiers (Tier 0 = no dependencies, Tier N = depends on Tier 0 to N-1)
-- [ ] T019: Group features by tier for parallelization opportunities
-
-## Step 5: Estimation & Prioritization
-
-- [ ] T020: Estimate complexity for each feature (Small: 1-3 days, Medium: 4-7 days, Large: 8+ days)
-- [ ] T021: Assign priority numbers based on dependency order and business value
-- [ ] T022: Within same tier, order by business value and risk reduction
-- [ ] T023: Validate priority sequence respects dependencies
-
-## Step 6: Dependency Graph Generation
-
-- [ ] T024: Create mermaid diagram with all feature IDs as nodes
-- [ ] T025: Add directed edges for all dependency relationships (A → B means B depends on A)
-- [ ] T026: Organize graph visually by tiers (top to bottom, Tier 0 at top)
-- [ ] T027: Validate graph is acyclic (no cycles detected)
-- [ ] T028: Ensure all features appear in graph
-
-## Step 7: Populate Blueprint Specification
-
-- [ ] T029: Create `spec.md` following `.xe/templates/specs/spec.md` structure
-- [ ] T030: Add frontmatter with blueprint ID and metadata
-- [ ] T031: Write Description section (product overview and blueprint purpose)
-- [ ] T032: Add Core Entities section (domain concepts spanning multiple features)
-- [ ] T033: Embed Feature Dependency Graph (mermaid diagram from T024-T028)
-- [ ] T034: Add Features section header and tier headers (Tier 0, Tier 1, etc.)
-- [ ] T035: Document all Tier 0 features with ID, dependencies, complexity, priority, scope, deliverables
-- [ ] T036: Document all Tier 1 features with ID, dependencies, complexity, priority, scope, deliverables
-- [ ] T037: Document all Tier 2 features with ID, dependencies, complexity, priority, scope, deliverables
-- [ ] T038: Document all Tier 3 features with ID, dependencies, complexity, priority, scope, deliverables
-- [ ] T039: Document all Tier 4 features with ID, dependencies, complexity, priority, scope, deliverables
-- [ ] T040: Add Success Criteria section (measurable conditions for blueprint completeness)
-- [ ] T041: Add Implementation Approach section (recommended feature order, parallelization, timeline)
-
-## Step 8: Validation
-
-- [ ] T042: Verify all features have unique kebab-case IDs
-- [ ] T043: Verify all features have dependencies list (empty array if none)
-- [ ] T044: Verify all features have complexity estimate (Small, Medium, or Large)
-- [ ] T045: Verify all features have priority number
-- [ ] T046: Verify all features have 1-2 sentence scope description
-- [ ] T047: Verify dependency graph is present in spec.md
-- [ ] T048: Verify dependency graph is acyclic (no circular dependencies)
-- [ ] T049: Verify dependency graph includes all feature IDs
-- [ ] T050: Verify features are correctly organized into numbered tiers
-- [ ] T051: Verify success criteria are measurable and complete
-- [ ] T052: Verify implementation approach is logical and respects dependencies
-
-## Step 9: Documentation
-
-- [ ] T053: Ensure `research.md` documents design decisions and rationale
-- [ ] T054: Ensure `plan.md` describes blueprint generation methodology
-- [ ] T055: Ensure `tasks.md` (this file) describes implementation steps
-- [ ] T056: Cross-reference all documents for consistency
+### Tier 4: Finalization
+- [ ] T014: Implement `finalization-workflow` feature
+- [ ] T015: Implement `export-system` feature
+- [ ] T016: Implement `progress-tracking` feature
+- [ ] T017: Implement `user-documentation` feature
 
 ## Dependencies
 
-**Sequential dependencies:**
-- Step 1 (Setup) must complete before Step 2 (Research)
-- Step 2 (Research) must complete before Step 3 (Feature Decomposition)
-- Step 3 (Feature Decomposition) must complete before Step 4 (Dependency Analysis)
-- Step 4 (Dependency Analysis) must complete before Step 5 (Estimation)
-- Step 5 (Estimation) must complete before Step 6 (Dependency Graph)
-- Step 6 (Dependency Graph) must complete before Step 7 (Populate Spec)
-- Step 7 (Populate Spec) must complete before Step 8 (Validation)
-- Step 8 (Validation) must complete before Step 9 (Documentation)
+**Tier-based dependencies:**
+- All Tier 0 features (T001-T003) can be implemented in parallel (no dependencies)
+- Tier 1 features (T004-T007) depend on Tier 0 completion
+- Tier 2 features (T008-T010) depend on Tier 1 completion
+- Tier 3 features (T011-T013) depend on Tier 2 completion
+- Tier 4 features (T014-T017) depend on Tier 3 completion
 
-**Task-level dependencies:**
-- T029 (Create spec.md) must complete before T030-T041 (populate sections)
-- T024-T028 (Dependency Graph) must complete before T033 (embed graph in spec)
-- T010-T014 (Feature Decomposition) must complete before T035-T039 (document features)
+**Feature-specific dependencies:**
+- T004 (`startup-config-schema`) blocks T005 (`init-script`)
+- T005 (`init-script`) blocks T008 (`init-workflow`)
+- T006 (`agreement-template`) consumed by T007 (`content-snippets`) and T011 (`section-script`)
+- T007 (`content-snippets`) blocks T011 (`section-script`)
+- T008 (`init-workflow`) blocks T009 (`section-orchestration`)
+- T009 (`section-orchestration`) blocks T010 (`section-templates`)
+- T010 (`section-templates`) blocks T011 (`section-script`)
+- T011 (`section-script`) blocks T014 (`finalization-workflow`)
+- T013 (`validation-system`) blocks T014 (`finalization-workflow`)
+- T014 (`finalization-workflow`) blocks T015 (`export-system`)
