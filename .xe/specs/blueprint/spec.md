@@ -77,14 +77,15 @@ graph TD
 
     E --> H
     F --> J
+    G --> E
     G --> H
     G --> I
     G --> J
+    G --> M
 
     H --> I
     I --> J
 
-    G --> M
     J --> M
     K --> J
     L --> M
@@ -100,20 +101,40 @@ graph TD
 #### Feature 1: repository-structure
 **ID**: `repository-structure`
 **Dependencies**: None
-**Complexity**: Small
+**Complexity**: Medium
 **Priority**: 1
 
-**Scope**: Define and create the complete directory structure, base configuration files, and foundational files required by all other features.
+**Scope**: Define and create the complete directory structure, base configuration files, GitHub repository settings, and labels required by all other features. Does NOT create content files (founders-agreement.md, progress.md) - those are owned by their respective features.
 
 **Deliverables**:
-- `.xe/config/` directory for configuration schemas and settings
-- `.xe/snippets/` directory structure for content templates
-- `.xe/scripts/` directory for TypeScript automation
-- `docs/` directory for end-user documentation
-- `.github/workflows/` for GitHub Actions
-- `.github/ISSUE_TEMPLATE/` for issue forms
-- Root files: `founders-agreement.md`, `progress.md`, `package.json`, `README.md`
-- TypeScript/Jest configuration files
+
+1. **Directory Structure**:
+   - `.xe/config/` - Configuration schemas and settings
+   - `.xe/snippets/` - Content templates directory structure
+   - `.xe/scripts/` - TypeScript automation scripts
+   - `docs/` - End-user documentation
+   - `.github/workflows/` - GitHub Actions
+   - `.github/ISSUE_TEMPLATE/` - Issue forms
+   - `templates/` - Agreement template files
+
+2. **Base Configuration Files**:
+   - `package.json` - Node.js project configuration with dependencies
+   - `tsconfig.json` - TypeScript configuration
+   - `jest.config.js` - Test configuration
+   - `.gitignore` - Git ignore rules
+   - `README.md` - Repository overview
+
+3. **GitHub Repository Configuration**:
+   - Enable template repository flag
+   - Configure branch protection for main branch
+   - Set up required status checks
+
+4. **GitHub Labels**:
+   - `ready-for-processing` - Issue ready for automation
+   - `section:{name}` - Labels for each agreement section (8 labels)
+   - `status:draft` - Agreement in draft state
+   - `status:in-review` - Agreement under review
+   - `status:complete` - Agreement finalized
 
 #### Feature 2: init-issue-template
 **ID**: `init-issue-template`
@@ -123,17 +144,49 @@ graph TD
 
 **Scope**: Create GitHub issue form template with 8 configuration questions, each with dropdown options and clear descriptions. Template includes explicit instructions for AI on how to process responses and which script to execute.
 
-**Questions**:
-1. Funding Intent (3 options)
-2. Contribution Balance (3 options)
-3. Time Commitment (3 options)
-4. Equity Flexibility (3 options)
-5. Studio Involvement (3 options)
-6. Open Source Focus (3 options)
-7. Investment Avoidance (3 options)
-8. Team Size (3 options)
+**Questions** (each with 3 options + "Undecided"):
 
-Each option includes explicit default behavior mapping. "Undecided" always means no default applied.
+1. **Funding Intent**: How do you plan to fund the company?
+   - Bootstrap - No external funding planned
+   - Raise Capital - Plan to raise VC/angel funding
+   - Undecided - Haven't decided yet
+
+2. **Contribution Balance**: Are founder contributions expected to be equal or unequal?
+   - Equal - All founders contribute equally
+   - Weighted - Contributions vary by role/time/capital
+   - Undecided - Haven't decided yet
+
+3. **Time Commitment**: Will all founders work full-time?
+   - Full-Time - All founders fully committed
+   - Mixed - Some full-time, some part-time
+   - Undecided - Haven't decided yet
+
+4. **Equity Flexibility**: How flexible should equity splits be over time?
+   - Fixed - Equity locked at founding
+   - Dynamic - Equity adjusts based on contribution
+   - Undecided - Haven't decided yet
+
+5. **Studio Involvement**: Is a studio or parent company involved?
+   - Yes - Studio/parent company involved
+   - No - Independent startup
+   - Undecided - Haven't decided yet
+
+6. **Open Source Focus**: Will the product be open source?
+   - Yes - Core product will be open source
+   - No - Proprietary/closed source
+   - Undecided - Haven't decided yet
+
+7. **Investment Avoidance**: Do you want to avoid traditional VC investment?
+   - Yes - Avoiding VC, alternative funding
+   - No - Open to VC investment
+   - Undecided - Haven't decided yet
+
+8. **Team Size**: How many founders are there?
+   - 2 Founders
+   - 3-4 Founders
+   - 5+ Founders
+
+**Default Behavior Mapping**: "Undecided" always means no defaults applied - founders must explicitly choose options during refinement.
 
 #### Feature 3: agreement-guide
 **ID**: `agreement-guide`
@@ -182,11 +235,11 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 
 #### Feature 5: init-script
 **ID**: `init-script`
-**Dependencies**: `repository-structure`, `init-issue-template`
+**Dependencies**: `repository-structure`, `init-issue-template`, `progress-tracking`
 **Complexity**: Large
 **Priority**: 5
 
-**Scope**: TypeScript script with embedded JSON schema that processes initialization issue responses, validates inputs, generates base agreement structure, saves configuration, and updates CODEOWNERS file.
+**Scope**: TypeScript script with embedded JSON schema that processes initialization issue responses, validates inputs, generates base agreement structure from template, initializes progress tracking, saves configuration, and updates CODEOWNERS file.
 
 **Functionality**:
 - Define JSON schema for `.xe/config/startup-settings.json` (8 questions, founder info, metadata)
@@ -194,6 +247,7 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Validate responses against embedded schema
 - Apply default behaviors based on configuration profile
 - Instantiate `founders-agreement.md` from agreement-template with section placeholders
+- Call progress-tracking API to create initial `progress.md` with section checklist
 - Save validated configuration to `.xe/config/startup-settings.json`
 - Update `.github/CODEOWNERS` with founder information
 - Create summary comment on initialization issue
@@ -203,6 +257,12 @@ Each option includes explicit default behavior mapping. "Undecided" always means
 - Founder details (names, emails, roles)
 - Repository metadata (creation date, template version)
 - Validation rules for all fields
+
+**Files Created**:
+- `founders-agreement.md` - Instantiated from agreement-template with placeholders
+- `.xe/config/startup-settings.json` - Validated configuration
+- `progress.md` - Created via progress-tracking library
+- Updated `.github/CODEOWNERS` - With founder information
 
 #### Feature 6: agreement-content
 **ID**: `agreement-content`

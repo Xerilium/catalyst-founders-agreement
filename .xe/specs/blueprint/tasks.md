@@ -55,12 +55,14 @@ Track the implementation status of all features defined in the blueprint. Update
 - T002 (`init-issue-template`) blocks T005 (`init-script`)
 - T003 (`agreement-guide`) blocks T006 (`agreement-content`)
 - T004 (`agreement-template`) blocks T006 (`agreement-content`) and T010 (`section-script`)
+- T007 (`progress-tracking`) blocks T005 (`init-script`), T008 (`init-workflow`), T009 (`section-orchestration`), T010 (`section-script`), and T013 (`finalization-workflow`)
 - T005 (`init-script`) blocks T008 (`init-workflow`)
 - T006 (`agreement-content`) blocks T010 (`section-script`)
-- T007 (`progress-tracking`) blocks T008 (`init-workflow`), T009 (`section-orchestration`), T010 (`section-script`), and T013 (`finalization-workflow`)
 - T008 (`init-workflow`) blocks T009 (`section-orchestration`)
 - T009 (`section-orchestration`) blocks T010 (`section-script`)
 - T010 (`section-script`) blocks T013 (`finalization-workflow`)
 - T012 (`validation-system`) blocks T013 (`finalization-workflow`)
 - T013 (`finalization-workflow`) blocks T014 (`export-system`)
 - T014 (`export-system`) blocks T015 (`user-documentation`)
+
+**Critical Path**: T001 → T007 → T005 → T008 → T009 → T010 → T013 → T014 → T015
