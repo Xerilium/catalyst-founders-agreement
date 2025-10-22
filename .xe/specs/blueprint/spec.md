@@ -45,126 +45,90 @@ graph TD
     %% Tier 0: Foundation
     A[repository-structure]
     B[init-issue-template]
-    C[agreement-guide]
-    D[agreement-template]
+    C[agreement-template]
 
     %% Tier 1: Core Configuration
-    E[init-script]
-    F[agreement-content]
-    G[progress-tracking]
+    D[init-script]
+    E[progress-tracking]
 
     %% Tier 2: Automation
-    H[init-workflow]
-    I[section-orchestration]
+    F[init-workflow]
+    G[section-orchestration]
 
     %% Tier 3: Section Processing
-    J[section-script]
-    K[ai-guidance]
-    L[validation-system]
+    H[section-script]
+    I[ai-guidance]
+    J[validation-system]
 
     %% Tier 4: Finalization
-    M[finalization-workflow]
-    N[export-system]
-    O[user-documentation]
+    K[finalization-workflow]
+    L[export-system]
 
     %% Dependencies
+    A --> D
     A --> E
-    A --> G
-    B --> E
-    C --> F
+    B --> D
+    C --> D
+    C --> H
+
     D --> F
-    D --> J
-
+    E --> D
+    E --> F
+    E --> G
     E --> H
-    F --> J
-    G --> E
+    E --> K
+
+    F --> G
     G --> H
-    G --> I
-    G --> J
-    G --> M
 
-    H --> I
-    I --> J
+    H --> K
+    I --> H
+    J --> K
 
-    J --> M
-    K --> J
-    L --> M
-
-    M --> N
-    N --> O
+    K --> L
 ```
 
 ## Workflow Sequence Diagram
 
-This diagram shows the end-to-end workflow from initialization through finalization:
+This diagram shows the high-level workflow layers and actors:
 
 ```mermaid
 sequenceDiagram
     actor Founder
-    participant Issue as GitHub Issue
-    participant InitWF as init-workflow
-    participant InitScript as init-script
-    participant Progress as progress-tracking
-    participant SecOrch as section-orchestration
-    participant AI as AI Agent
-    participant SecScript as section-script
-    participant FinalWF as finalization-workflow
-    participant Export as export-system
+    participant GitHub Actions
+    participant Script
+    participant AI Agent
 
-    Founder->>Issue: Create initialization issue
-    Note over Founder,Issue: 8 configuration questions answered
+    Founder->>GitHub Actions: Create initialization issue
+    Note over Founder,GitHub Actions: 8 configuration questions answered
 
-    Issue->>InitWF: Trigger (issue created)
-    InitWF->>InitScript: Execute with issue data
+    GitHub Actions->>Script: Execute init-script
+    Script->>Script: Validate config, create agreement structure
+    Script-->>GitHub Actions: Files generated
 
-    InitScript->>InitScript: Validate responses against schema
-    InitScript->>InitScript: Create founders-agreement.md from template
-    InitScript->>Progress: createProgressFile(sections[])
-    Progress-->>InitScript: progress.md created
-    InitScript->>InitScript: Save startup-settings.json
-    InitScript->>InitScript: Update CODEOWNERS
-    InitScript-->>InitWF: Success
+    GitHub Actions->>Founder: Create PR for review
 
-    InitWF->>Issue: Post summary comment
-    InitWF->>Founder: Create PR with generated files
+    Founder->>Founder: Review and merge initialization PR
 
-    Founder->>Founder: Review and merge PR
+    Note over Founder,GitHub Actions: Triggers section orchestration
 
-    Note over Founder,SecOrch: PR merged, triggers section orchestration
-
-    SecOrch->>Progress: getSectionStatus() for all sections
-    Progress-->>SecOrch: List of incomplete sections
-
-    loop For each incomplete section
-        SecOrch->>Issue: Create section issue from template
-        SecOrch->>AI: Assign section issue
-    end
+    GitHub Actions->>AI Agent: Create section issues (one per section)
 
     loop For each section
-        AI->>SecScript: Execute section-script
-        SecScript->>SecScript: Load config from startup-settings.json
-        SecScript->>SecScript: Select snippets based on config
-        SecScript->>SecScript: Assemble section content
-        SecScript->>SecScript: Update founders-agreement.md
-        SecScript->>Progress: updateSectionStatus(sectionId, 'complete')
-        Progress-->>SecScript: Updated
-        SecScript->>AI: Create PR with section changes
-        AI->>Founder: Request review
+        AI Agent->>Script: Execute section-script
+        Script->>Script: Assemble content from snippets
+        Script-->>AI Agent: Section complete
+        AI Agent->>Founder: Create PR for section
         Founder->>Founder: Review and merge section PR
     end
 
-    Progress->>Progress: All sections complete
-    Progress->>FinalWF: Trigger (all sections done)
+    Note over Founder,GitHub Actions: All sections complete
 
-    FinalWF->>Progress: isComplete()
-    Progress-->>FinalWF: true
-    FinalWF->>FinalWF: Run validation-system
-    FinalWF->>Export: Execute export-system
-    Export->>Export: Convert MD to PDF
-    Export-->>FinalWF: founders-agreement.pdf
-    FinalWF->>FinalWF: Create GitHub release (ISO date)
-    FinalWF->>FinalWF: Attach PDF to release
-    FinalWF->>Founder: Notify completion
+    GitHub Actions->>Script: Run validation and export
+    Script->>Script: Generate PDF
+    Script-->>GitHub Actions: PDF ready
+
+    GitHub Actions->>Founder: Create release with PDF
 ```
 
 ## Features
@@ -177,37 +141,25 @@ sequenceDiagram
 **Complexity**: Medium
 **Priority**: 1
 
-**Scope**: Define and create the complete directory structure, base configuration files, GitHub repository settings, and labels required by all other features. Does NOT create content files (founders-agreement.md, progress.md) - those are owned by their respective features.
+**Scope**: Define and create base configuration files, GitHub repository settings, and labels required by all other features. Folders are created by features that own the files within them.
 
 **Deliverables**:
 
-1. **Directory Structure**:
-   - `.xe/config/` - Configuration schemas and settings
-   - `.xe/snippets/` - Content templates directory structure
-   - `.xe/scripts/` - TypeScript automation scripts
-   - `docs/` - End-user documentation
-   - `.github/workflows/` - GitHub Actions
-   - `.github/ISSUE_TEMPLATE/` - Issue forms
-   - `templates/` - Agreement template files
-
-2. **Base Configuration Files**:
+1. **Base Configuration Files**:
    - `package.json` - Node.js project configuration with dependencies
    - `tsconfig.json` - TypeScript configuration
    - `jest.config.js` - Test configuration
    - `.gitignore` - Git ignore rules
    - `README.md` - Repository overview
 
-3. **GitHub Repository Configuration**:
+2. **GitHub Repository Configuration**:
    - Enable template repository flag
    - Configure branch protection for main branch
    - Set up required status checks
 
-4. **GitHub Labels**:
-   - `ready-for-processing` - Issue ready for automation
-   - `section:{name}` - Labels for each agreement section (8 labels)
-   - `status:draft` - Agreement in draft state
-   - `status:in-review` - Agreement under review
-   - `status:complete` - Agreement finalized
+3. **GitHub Labels**:
+   - Create labels for issue categorization and workflow automation
+   - Labels will support section tracking and status management
 
 #### Feature 2: init-issue-template
 **ID**: `init-issue-template`
@@ -261,89 +213,13 @@ sequenceDiagram
 
 **Default Behavior Mapping**: "Undecided" always means no defaults applied - founders must explicitly choose options during refinement.
 
-#### Feature 3: agreement-guide
-**ID**: `agreement-guide`
-**Dependencies**: None
-**Complexity**: Medium
-**Priority**: 3
-
-**Scope**: Comprehensive documentation in `docs/` that explains each configuration question, all available options, the implications of each choice, and how they affect the generated agreement. Used by founders during initialization and by AI when answering questions.
-
-**Content Areas**:
-- Overview of founders agreements
-- Detailed explanation of each of 8 configuration questions
-- When to choose each option
-- How options interact with each other
-- Common scenarios and recommended configurations
-- Glossary of legal and startup terms
-
-#### Feature 4: agreement-template
+#### Feature 3: agreement-template
 **ID**: `agreement-template`
 **Dependencies**: None
-**Complexity**: Medium
-**Priority**: 4
-
-**Scope**: Markdown template file defining the structure of the founders agreement document with placeholders for sections, founder names, dates, and configuration-driven content.
-
-**Template Structure**:
-- Document header with title and metadata placeholders
-- Introduction section with purpose statement
-- Placeholders for 8 core agreement sections:
-  - Equity split and ownership
-  - Vesting schedules and acceleration
-  - IP assignment and licensing
-  - Governance and decision-making
-  - Roles and responsibilities
-  - Capital contributions
-  - Exit provisions and buyouts
-  - Dispute resolution
-- Signature blocks with founder name placeholders
-- Document footer with version and date placeholders
-
-**Usage**: This template is instantiated by init-script and populated by section-script with content from content-snippets based on startup configuration.
-
----
-
-### Tier 1: Core Configuration (Depends on Tier 0)
-
-#### Feature 5: init-script
-**ID**: `init-script`
-**Dependencies**: `repository-structure`, `init-issue-template`, `progress-tracking`
 **Complexity**: Large
-**Priority**: 5
+**Priority**: 3
 
-**Scope**: TypeScript script with embedded JSON schema that processes initialization issue responses, validates inputs, generates base agreement structure from template, initializes progress tracking, saves configuration, and updates CODEOWNERS file.
-
-**Functionality**:
-- Define JSON schema for `.xe/config/startup-settings.json` (8 questions, founder info, metadata)
-- Parse issue body and extract question responses
-- Validate responses against embedded schema
-- Apply default behaviors based on configuration profile
-- Instantiate `founders-agreement.md` from agreement-template with section placeholders
-- Call progress-tracking API to create initial `progress.md` with section checklist
-- Save validated configuration to `.xe/config/startup-settings.json`
-- Update `.github/CODEOWNERS` with founder information
-- Create summary comment on initialization issue
-
-**Configuration Schema** (embedded in script):
-- Configuration responses (8 questions with selected options)
-- Founder details (names, emails, roles)
-- Repository metadata (creation date, template version)
-- Validation rules for all fields
-
-**Files Created**:
-- `founders-agreement.md` - Instantiated from agreement-template with placeholders
-- `.xe/config/startup-settings.json` - Validated configuration
-- `progress.md` - Created via progress-tracking library
-- Updated `.github/CODEOWNERS` - With founder information
-
-#### Feature 6: agreement-content
-**ID**: `agreement-content`
-**Dependencies**: `agreement-guide`, `agreement-template`
-**Complexity**: Large
-**Priority**: 6
-
-**Scope**: Complete content library including agreement template structure, content snippets for all configuration combinations, and section-specific issue templates for AI-driven completion.
+**Scope**: Complete agreement template system including markdown document structure, configuration guide documentation, content snippets for all option combinations, and section-specific issue templates for AI-driven completion.
 
 **Deliverables**:
 
@@ -353,7 +229,15 @@ sequenceDiagram
    - 8 core section placeholders (equity, vesting, IP, governance, roles, capital, exit, dispute)
    - Signature blocks and footer
 
-2. **Content Snippets** (`.xe/snippets/{section}/{option}.md`):
+2. **Configuration Guide Documentation** (`docs/configure.md`):
+   - Overview of founders agreements
+   - Detailed explanation of each of 8 configuration questions
+   - When to choose each option and implications of each choice
+   - How options interact with each other
+   - Common scenarios and recommended configurations
+   - Glossary of legal and startup terms
+
+3. **Content Snippets** (`.xe/snippets/{section}/{option}.md`):
    - Equity split models (equal, weighted, dynamic)
    - Vesting schedules (standard, custom, none)
    - IP assignment clauses
@@ -362,20 +246,45 @@ sequenceDiagram
    - Exit and buyout provisions
    - Non-compete and non-solicitation clauses
    - Dispute resolution mechanisms
+   - Coverage for all meaningful combinations of 8 configuration questions
 
-3. **Section Issue Templates** (`.github/ISSUE_TEMPLATE/sections/`):
+4. **Section Issue Templates** (`.github/ISSUE_TEMPLATE/sections/`):
    - One template per agreement section (8 templates)
    - Section context and configuration references
    - Explicit script execution instructions for AI
    - Validation requirements and acceptance criteria
 
-**Coverage**: All meaningful combinations of 8 configuration questions across all agreement sections.
+**Usage**: Template is instantiated by init-script and populated by section-script with content from snippets based on startup configuration.
 
-#### Feature 7: progress-tracking
+---
+
+### Tier 1: Core Configuration (Depends on Tier 0)
+
+#### Feature 4: init-script
+**ID**: `init-script`
+**Dependencies**: `repository-structure`, `init-issue-template`, `agreement-template`, `progress-tracking`
+**Complexity**: Large
+**Priority**: 4
+
+**Scope**: TypeScript script with embedded JSON schema that processes initialization issue responses, validates inputs, generates base agreement structure from template, initializes progress tracking, saves configuration, and updates CODEOWNERS file.
+
+**Key Requirements**:
+- Define embedded JSON schema for configuration file (8 questions, founder info, metadata)
+- Parse issue body and extract question responses
+- Validate responses against schema
+- Instantiate `founders-agreement.md` from agreement-template with section placeholders
+- Call progress-tracking API to create initial `progress.md` with section checklist
+- Save validated configuration
+- Update `.github/CODEOWNERS` with founder information
+- Create summary comment on initialization issue
+
+**Configuration File**: Naming options to consider - `startup-settings.json`, `founder-settings.json`, `agreement-settings.json`, `agreement.json`, or `agreement.config`
+
+#### Feature 5: progress-tracking
 **ID**: `progress-tracking`
 **Dependencies**: `repository-structure`
 **Complexity**: Small
-**Priority**: 7
+**Priority**: 5
 
 **Scope**: Utility library for creating and updating `progress.md` with visual progress indicators showing which sections are complete, in progress, or not started. Consumed by init-script, section-script, and finalization-workflow.
 
@@ -387,27 +296,21 @@ sequenceDiagram
 - `getSectionStatus(sectionId)` - Get current status of a section
 
 **Display Format**:
-- Section checklist with status icons (✅ complete, 🔄 in-progress, ⬜ not started)
+- Section checklist with status icons
 - Percentage complete indicator
 - Last updated timestamp
 - Link to related issue/PR for each section
-- Overall agreement status (Draft, In Review, Complete)
-
-**Updates**:
-- Called by init-script to create initial progress.md
-- Called by section-script after each section completion
-- Called by section-orchestration to check which sections need issues
-- Consumed by finalization-workflow to determine readiness
+- Overall agreement status
 
 ---
 
 ### Tier 2: Automation (Depends on Tier 1)
 
-#### Feature 8: init-workflow
+#### Feature 6: init-workflow
 **ID**: `init-workflow`
 **Dependencies**: `init-script`, `progress-tracking`
 **Complexity**: Large
-**Priority**: 8
+**Priority**: 6
 
 **Scope**: GitHub Action workflow that triggers when initialization issue is created/updated, executes init-script, and orchestrates the initialization process.
 
@@ -424,23 +327,19 @@ sequenceDiagram
 6. Post summary comment with next steps
 7. Close initialization issue when PR merged
 
-#### Feature 9: section-orchestration
+#### Feature 7: section-orchestration
 **ID**: `section-orchestration`
-**Dependencies**: `init-workflow`, `agreement-content`, `progress-tracking`
+**Dependencies**: `init-workflow`, `agreement-template`, `progress-tracking`
 **Complexity**: Large
-**Priority**: 9
+**Priority**: 7
 
-**Scope**: GitHub Action workflow that detects when `founders-agreement.md` is created (post-initialization) and automatically creates section-specific issues for each agreement section using templates from agreement-content, assigning them to AI.
-
-**Triggers**:
-- Creation or update of `founders-agreement.md`
-- Detection of incomplete sections in `progress.md`
+**Scope**: GitHub Action workflow that detects when `founders-agreement.md` is created (post-initialization) and automatically creates section-specific issues for each agreement section using templates from agreement-template feature, assigning them to AI.
 
 **Functionality**:
 - Read agreement structure and identify sections
-- For each incomplete section, create issue from section template (from agreement-content feature)
+- For each incomplete section, create issue from section template
 - Assign issue to configured AI agent (e.g., copilot-swe-agent, Claude Code)
-- Add section context and configuration from startup-settings.json
+- Add section context and configuration from settings file
 - Include explicit instructions for which script to run
 - Track created issues in `progress.md`
 
@@ -448,20 +347,20 @@ sequenceDiagram
 
 ### Tier 3: Section Processing (Depends on Tier 2)
 
-#### Feature 10: section-script
+#### Feature 8: section-script
 **ID**: `section-script`
-**Dependencies**: `agreement-content`, `agreement-template`, `section-orchestration`, `progress-tracking`
+**Dependencies**: `agreement-template`, `section-orchestration`, `progress-tracking`
 **Complexity**: Large
-**Priority**: 10
+**Priority**: 8
 
-**Scope**: TypeScript script that reads configuration, selects appropriate snippets from agreement-content, assembles section content, and updates `founders-agreement.md` with the completed section.
+**Scope**: TypeScript script that reads configuration, selects appropriate snippets from agreement-template, assembles section content, and updates `founders-agreement.md` with the completed section.
 
 **Functionality**:
 - Read section ID from script arguments
-- Load configuration from startup-settings.json
+- Load configuration from settings file
 - Determine which snippets to use based on configuration
-- Assemble section content from agreement-content snippets
-- Insert section content into correct location in agreement (based on agreement-template structure)
+- Assemble section content from snippets
+- Insert section content into correct location in agreement
 - Update progress.md to mark section complete
 - Generate PR with section changes
 - Validate section completeness
@@ -472,38 +371,31 @@ sequenceDiagram
 - Merge multiple snippets when required
 - Apply variable substitution (founder names, dates, etc.)
 
-#### Feature 11: ai-guidance
+#### Feature 9: ai-guidance
 **ID**: `ai-guidance`
-**Dependencies**: `agreement-guide`
-**Complexity**: Medium
-**Priority**: 11
+**Dependencies**: `agreement-template`
+**Complexity**: Small
+**Priority**: 9
 
-**Scope**: Tuned instruction files for GitHub Copilot, Claude Code, and other AI agents that guide collaborative behavior, tone, and approach when answering founder questions about agreement options.
+**Scope**: AI instruction files that guide collaborative behavior, tone, and approach when answering founder questions about agreement options.
+
+**Requirements**:
+1. Generate minimal content in agent-specific instruction files (use Claude Code and GitHub Copilot as examples)
+2. Require that common instructions are centralized in a shared file to avoid duplication across agent-specific files
 
 **Instruction Areas**:
 - How to interpret founder questions
-- When to reference agreement-guide documentation
+- When to reference configuration guide documentation
 - Tone and style (collaborative, educational, non-legal-advice disclaimer)
 - How to explain tradeoffs between options
 - When to suggest alternatives
 - How to handle ambiguous requests
-- Disclaimers about not providing legal advice
 
-**File Locations**:
-- `CLAUDE.md` in repo root (for Claude Code)
-- `.github/copilot-instructions.md` (for GitHub Copilot)
-- Future: `.xe/ai/` directory for additional agent-specific instructions
-
-**Supported AI Platforms**:
-- Claude Code
-- GitHub Copilot
-- Future: Cursor, Windsurf, other AI coding assistants
-
-#### Feature 12: validation-system
+#### Feature 10: validation-system
 **ID**: `validation-system`
 **Dependencies**: `init-script`, `section-script`
 **Complexity**: Large
-**Priority**: 12
+**Priority**: 10
 
 **Scope**: TypeScript validation utilities that check agreement completeness, section consistency, configuration validity, and readiness for finalization.
 
@@ -525,11 +417,11 @@ sequenceDiagram
 
 ### Tier 4: Finalization (Depends on Tier 3)
 
-#### Feature 13: finalization-workflow
+#### Feature 11: finalization-workflow
 **ID**: `finalization-workflow`
 **Dependencies**: `validation-system`, `section-script`, `progress-tracking`
 **Complexity**: Large
-**Priority**: 13
+**Priority**: 11
 
 **Scope**: GitHub Action workflow that triggers when all sections are complete, runs final validation, executes export-system, creates GitHub release with ISO date version, and attaches PDF.
 
@@ -548,11 +440,11 @@ sequenceDiagram
 8. Archive all section issues
 9. Clean up temporary files
 
-#### Feature 14: export-system
+#### Feature 12: export-system
 **ID**: `export-system`
 **Dependencies**: `finalization-workflow`, `validation-system`
 **Complexity**: Large
-**Priority**: 14
+**Priority**: 12
 
 **Scope**: TypeScript script that converts `founders-agreement.md` to professional PDF format with proper styling, formatting, and legal document conventions.
 
@@ -563,7 +455,7 @@ sequenceDiagram
 - Add headers/footers with founder names and date
 - Format sections with proper legal numbering
 - Embed metadata (version, creation date, founders)
-- Output PDF to `.xe/output/founders-agreement-{date}.pdf`
+- Output PDF
 - Validate PDF generation success
 
 **Technical Approach**:
@@ -571,46 +463,12 @@ sequenceDiagram
 - Custom CSS for legal document formatting
 - Ensure reproducible, deterministic output
 
-#### Feature 15: user-documentation
-**ID**: `user-documentation`
-**Dependencies**: `export-system`
-**Complexity**: Medium
-**Priority**: 15
-
-**Scope**: Complete end-user product documentation in `docs/` covering how to use the template, customize agreements, understand workflows, and troubleshoot issues. This is the instructional guide that walks founders through the initialization questions and helps them understand their options.
-
-**Documentation Files**:
-- `docs/README.md` - Overview and quick start
-- `docs/configure.md` - Detailed configuration guide (from feature 3)
-- `docs/workflow.md` - How the automation works
-- `docs/customize.md` - How to customize snippets and templates
-- `docs/troubleshoot.md` - Common issues and solutions
-- `docs/work-with-ai.md` - How to work effectively with AI
-- `docs/disclaimer.md` - Not legal advice disclaimer
-- `docs/faq.md` - Frequently asked questions
-
 ---
 
 ## Success Criteria
 
-- [ ] All features documented with unique IDs
-- [ ] Feature dependency graph is acyclic and correctly represents dependencies
-- [ ] Features are organized into 5 dependency tiers
-- [ ] Each feature has scope description (1-2 sentences)
-- [ ] Each feature has complexity estimate (Small, Medium, Large)
-- [ ] Each feature has priority order number
-- [ ] All features align with product vision in `.xe/product.md`
-- [ ] Blueprint enables implementation of complete Catalyst Founders Agreement product
-
-## Implementation Approach
-
-Features will be implemented using `/catalyst:run start-rollout {feature-id}` for each feature in dependency order. Features within the same tier can be implemented in parallel if multiple developers are available.
-
-**Recommended Implementation Order**:
-1. Tier 0 features (parallel): repository-structure, init-issue-template, agreement-guide, agreement-template
-2. Tier 1 features (sequential): startup-config-schema → init-script, then content-snippets
-3. Tier 2 features (sequential): init-workflow → section-orchestration → section-templates
-4. Tier 3 features (parallel): section-script, ai-guidance, validation-system
-5. Tier 4 features (sequential): finalization-workflow → export-system → progress-tracking → user-documentation
-
-Total estimated timeline: 12-18 weeks with 1 full-time developer, 6-9 weeks with 2 developers working in parallel on independent tiers.
+- [ ] Blueprint defines all features needed to implement the Catalyst Founders Agreement product
+- [ ] Feature dependency graph is acyclic
+- [ ] Dependencies enable parallel implementation within tiers
+- [ ] Each feature has clear scope and deliverables
+- [ ] Blueprint aligns with product vision

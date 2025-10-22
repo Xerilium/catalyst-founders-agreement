@@ -19,50 +19,44 @@ Track the implementation status of all features defined in the blueprint. Update
 ### Tier 0: Foundation
 - [ ] T001: Implement `repository-structure` feature
 - [ ] T002: Implement `init-issue-template` feature
-- [ ] T003: Implement `agreement-guide` feature
-- [ ] T004: Implement `agreement-template` feature
+- [ ] T003: Implement `agreement-template` feature
 
 ### Tier 1: Core Configuration
-- [ ] T005: Implement `init-script` feature (includes startup-config schema)
-- [ ] T006: Implement `agreement-content` feature (includes content snippets and section templates)
-- [ ] T007: Implement `progress-tracking` feature
+- [ ] T004: Implement `init-script` feature
+- [ ] T005: Implement `progress-tracking` feature
 
 ### Tier 2: Automation
-- [ ] T008: Implement `init-workflow` feature
-- [ ] T009: Implement `section-orchestration` feature
+- [ ] T006: Implement `init-workflow` feature
+- [ ] T007: Implement `section-orchestration` feature
 
 ### Tier 3: Section Processing
-- [ ] T010: Implement `section-script` feature
-- [ ] T011: Implement `ai-guidance` feature
-- [ ] T012: Implement `validation-system` feature
+- [ ] T008: Implement `section-script` feature
+- [ ] T009: Implement `ai-guidance` feature
+- [ ] T010: Implement `validation-system` feature
 
 ### Tier 4: Finalization
-- [ ] T013: Implement `finalization-workflow` feature
-- [ ] T014: Implement `export-system` feature
-- [ ] T015: Implement `user-documentation` feature
+- [ ] T011: Implement `finalization-workflow` feature
+- [ ] T012: Implement `export-system` feature
 
 ## Dependencies
 
 **Tier-based dependencies:**
-- All Tier 0 features (T001-T004) can be implemented in parallel (no dependencies)
-- Tier 1 features (T005-T007) depend on Tier 0 completion
-- Tier 2 features (T008-T009) depend on Tier 1 completion
-- Tier 3 features (T010-T012) depend on Tier 2 completion
-- Tier 4 features (T013-T015) depend on Tier 3 completion
+- All Tier 0 features (T001-T003) can be implemented in parallel (no dependencies)
+- Tier 1 features (T004-T005) depend on Tier 0 completion
+- Tier 2 features (T006-T007) depend on Tier 1 completion
+- Tier 3 features (T008-T010) depend on Tier 2 completion
+- Tier 4 features (T011-T012) depend on Tier 3 completion
 
 **Feature-specific dependencies:**
-- T001 (`repository-structure`) blocks T005 (`init-script`) and T007 (`progress-tracking`)
-- T002 (`init-issue-template`) blocks T005 (`init-script`)
-- T003 (`agreement-guide`) blocks T006 (`agreement-content`)
-- T004 (`agreement-template`) blocks T006 (`agreement-content`) and T010 (`section-script`)
-- T007 (`progress-tracking`) blocks T005 (`init-script`), T008 (`init-workflow`), T009 (`section-orchestration`), T010 (`section-script`), and T013 (`finalization-workflow`)
-- T005 (`init-script`) blocks T008 (`init-workflow`)
-- T006 (`agreement-content`) blocks T010 (`section-script`)
-- T008 (`init-workflow`) blocks T009 (`section-orchestration`)
-- T009 (`section-orchestration`) blocks T010 (`section-script`)
-- T010 (`section-script`) blocks T013 (`finalization-workflow`)
-- T012 (`validation-system`) blocks T013 (`finalization-workflow`)
-- T013 (`finalization-workflow`) blocks T014 (`export-system`)
-- T014 (`export-system`) blocks T015 (`user-documentation`)
+- T001 (`repository-structure`) blocks T004 (`init-script`) and T005 (`progress-tracking`)
+- T002 (`init-issue-template`) blocks T004 (`init-script`)
+- T003 (`agreement-template`) blocks T004 (`init-script`), T007 (`section-orchestration`), T008 (`section-script`), and T009 (`ai-guidance`)
+- T005 (`progress-tracking`) blocks T004 (`init-script`), T006 (`init-workflow`), T007 (`section-orchestration`), T008 (`section-script`), and T011 (`finalization-workflow`)
+- T004 (`init-script`) blocks T006 (`init-workflow`)
+- T006 (`init-workflow`) blocks T007 (`section-orchestration`)
+- T007 (`section-orchestration`) blocks T008 (`section-script`)
+- T008 (`section-script`) blocks T011 (`finalization-workflow`)
+- T010 (`validation-system`) blocks T011 (`finalization-workflow`)
+- T011 (`finalization-workflow`) blocks T012 (`export-system`)
 
-**Critical Path**: T001 → T007 → T005 → T008 → T009 → T010 → T013 → T014 → T015
+**Critical Path**: T001 → T005 → T004 → T006 → T007 → T008 → T011 → T012
