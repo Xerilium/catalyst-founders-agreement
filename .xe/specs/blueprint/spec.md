@@ -581,12 +581,12 @@ sequenceDiagram
 
 **Documentation Files**:
 - `docs/README.md` - Overview and quick start
-- `docs/agreement-guide.md` - Detailed configuration guide (from feature 3)
-- `docs/workflow-guide.md` - How the automation works
-- `docs/customization-guide.md` - How to customize snippets and templates
-- `docs/troubleshooting.md` - Common issues and solutions
-- `docs/ai-collaboration.md` - How to work effectively with AI
-- `docs/legal-disclaimer.md` - Not legal advice disclaimer
+- `docs/configure.md` - Detailed configuration guide (from feature 3)
+- `docs/workflow.md` - How the automation works
+- `docs/customize.md` - How to customize snippets and templates
+- `docs/troubleshoot.md` - Common issues and solutions
+- `docs/work-with-ai.md` - How to work effectively with AI
+- `docs/disclaimer.md` - Not legal advice disclaimer
 - `docs/faq.md` - Frequently asked questions
 
 ---
