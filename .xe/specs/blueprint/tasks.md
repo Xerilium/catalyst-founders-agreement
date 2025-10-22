@@ -37,6 +37,7 @@ Track the implementation status of all features defined in the blueprint. Update
 ### Tier 4: Finalization
 - [ ] T011: Implement `finalization-workflow` feature
 - [ ] T012: Implement `export-system` feature
+- [ ] T013: Implement `user-documentation` feature
 
 ## Dependencies
 
@@ -58,5 +59,6 @@ Track the implementation status of all features defined in the blueprint. Update
 - T008 (`section-script`) blocks T011 (`finalization-workflow`)
 - T010 (`validation-system`) blocks T011 (`finalization-workflow`)
 - T011 (`finalization-workflow`) blocks T012 (`export-system`)
+- T012 (`export-system`) blocks T013 (`user-documentation`)
 
-**Critical Path**: T001 → T005 → T004 → T006 → T007 → T008 → T011 → T012
+**Critical Path**: T001 → T005 → T004 → T006 → T007 → T008 → T011 → T012 → T013

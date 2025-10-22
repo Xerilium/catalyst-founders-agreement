@@ -63,6 +63,7 @@ graph TD
     %% Tier 4: Finalization
     K[finalization-workflow]
     L[export-system]
+    M[user-documentation]
 
     %% Dependencies
     A --> D
@@ -86,6 +87,7 @@ graph TD
     J --> K
 
     K --> L
+    L --> M
 ```
 
 ## Workflow Sequence Diagram
@@ -295,13 +297,6 @@ sequenceDiagram
 - `isComplete()` - Check if all sections are done
 - `getSectionStatus(sectionId)` - Get current status of a section
 
-**Display Format**:
-- Section checklist with status icons
-- Percentage complete indicator
-- Last updated timestamp
-- Link to related issue/PR for each section
-- Overall agreement status
-
 ---
 
 ### Tier 2: Automation (Depends on Tier 1)
@@ -334,6 +329,10 @@ sequenceDiagram
 **Priority**: 7
 
 **Scope**: GitHub Action workflow that detects when `founders-agreement.md` is created (post-initialization) and automatically creates section-specific issues for each agreement section using templates from agreement-template feature, assigning them to AI.
+
+**Triggers**:
+- Initialization PR is merged (creates `founders-agreement.md` in main branch)
+- Only triggers once when `progress.md` shows all sections as not started
 
 **Functionality**:
 - Read agreement structure and identify sections
@@ -462,6 +461,21 @@ sequenceDiagram
 - Use markdown-to-pdf library (e.g., markdown-pdf, puppeteer)
 - Custom CSS for legal document formatting
 - Ensure reproducible, deterministic output
+
+#### Feature 13: user-documentation
+**ID**: `user-documentation`
+**Dependencies**: `export-system`
+**Complexity**: Medium
+**Priority**: 13
+
+**Scope**: Complete end-user product documentation covering how to use the template, customize agreements, understand workflows, and troubleshoot issues.
+
+**Documentation Files**:
+- `docs/README.md` - Overview and quick start
+- `docs/workflow.md` - How the automation works
+- `docs/customize.md` - How to customize snippets and templates
+- `docs/troubleshoot.md` - Common issues and solutions
+- `docs/faq.md` - Frequently asked questions
 
 ---
 
