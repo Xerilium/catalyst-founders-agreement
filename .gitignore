@@ -27,3 +27,6 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Local Claude settings (sensitive)
+.claude/settings.local.json
