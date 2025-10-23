@@ -380,7 +380,7 @@ sequenceDiagram
 
 **Requirements**:
 1. Generate minimal content in agent-specific instruction files (use Claude Code and GitHub Copilot as examples)
-2. Require that common instructions are centralized in a shared file to avoid duplication across agent-specific files
+2. Require that common instructions are centralized in a shared file (must live in `.xe/` folder) to avoid duplication across agent-specific files
 
 **Instruction Areas**:
 - How to interpret founder questions
