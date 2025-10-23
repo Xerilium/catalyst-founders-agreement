@@ -7,12 +7,11 @@
  * 2. The latest reply doesn't contain the AI platform prefix
  *
  * Usage:
- *   npx tsx .xe/playbooks/scripts/find-pr-threads-needing-replies.ts <pr-number> [ai-platform]
- *   node --loader ts-node/esm .xe/playbooks/scripts/find-pr-threads-needing-replies.ts <pr-number> [ai-platform]
+ *   npx tsx .xe/playbooks/scripts/findPrThreadsNeedingReplies.ts <pr-number> [ai-platform]
  *
  * Arguments:
  *   pr-number: GitHub PR number to analyze
- *   ai-platform: AI platform name (e.g., "Claude", "Copilot"). Defaults to "Claude"
+ *   ai-platform: AI platform name (e.g., "Claude", "Copilot"). Defaults to "AI"
  *
  * Output:
  *   JSON array of thread objects needing replies, each containing:
@@ -49,6 +48,8 @@ interface ThreadInfo {
 
 function fetchPRComments(prNumber: number): Comment[] {
   try {
+    // Note: {owner} and {repo} are GitHub CLI placeholders that get auto-resolved
+    // based on the current repository context
     const output = execSync(
       `gh api /repos/{owner}/{repo}/pulls/${prNumber}/comments --paginate`,
       { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 } // 10MB buffer
@@ -78,7 +79,7 @@ function groupByThread(comments: Comment[]): Map<number, Comment[]> {
 
 function findThreadsNeedingReplies(
   threads: Map<number, Comment[]>,
-  aiPlatform: string
+  aiPlatform: string = 'AI'
 ): ThreadInfo[] {
   const aiPrefix = `[Catalyst][${aiPlatform}]`;
   const needsReply: ThreadInfo[] = [];
@@ -91,8 +92,9 @@ function findThreadsNeedingReplies(
     const latest = sortedComments[sortedComments.length - 1];
     const original = threadComments.find(c => c.in_reply_to_id === null) || sortedComments[0];
 
-    // Check if latest comment is from the AI platform
-    if (latest.body.includes(aiPrefix)) {
+    // Check if latest comment starts with the AI platform prefix
+    // This prevents false positives when the prefix appears in quotes
+    if (latest.body.trimStart().startsWith(aiPrefix)) {
       continue;
     }
 
@@ -115,12 +117,12 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.length < 1) {
-    console.error('Usage: npx tsx find-pr-threads-needing-replies.ts <pr-number> [ai-platform]');
+    console.error('Usage: npx tsx findPrThreadsNeedingReplies.ts <pr-number> [ai-platform]');
     process.exit(1);
   }
 
   const prNumber = parseInt(args[0], 10);
-  const aiPlatform = args[1] || 'Claude';
+  const aiPlatform = args[1] || 'AI';
 
   if (isNaN(prNumber)) {
     console.error('Error: pr-number must be a valid integer');

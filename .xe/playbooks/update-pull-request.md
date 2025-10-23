@@ -66,15 +66,11 @@ Engineer
 
 This playbook requires comprehensive analysis to evaluate PR feedback quality and validity:
 
-- Extract all comments from reviews, line comments, and general PR comments.
-- Filter out any resolved comment threads.
-- **Use the `find-pr-threads-needing-replies.ts` script** to identify threads needing responses:
+- **Run the thread identification script** to find all threads needing responses:
   ```bash
-  npx tsx .xe/playbooks/scripts/find-pr-threads-needing-replies.ts <pr-number> <ai-platform>
+  npx tsx .xe/playbooks/scripts/findPrThreadsNeedingReplies.ts <pr-number> <ai-platform>
   ```
-  This script correctly identifies threads where the LATEST reply is from a user (not the AI platform).
-- Manually verify the script output to understand which threads need attention.
-- Filter out any comment threads where the latest reply was written by the AI platform (identified by `[Catalyst][{ai-platform}]` prefix).
+  The script identifies threads where the latest reply is from a user (not the AI platform).
 - **Check for `#force-accept` tags** in comment threads:
   - If found with specific instructions, note the exact requirement to implement.
   - If found alone, identify the latest suggestion in that thread to accept.
@@ -233,13 +229,11 @@ This playbook requires comprehensive analysis to evaluate PR feedback quality an
 
 ## Verification
 
-- **Run the `find-pr-threads-needing-replies.ts` script again** to verify all threads have been addressed:
+- **Run the thread identification script again** to verify all threads have been addressed:
   ```bash
-  npx tsx .xe/playbooks/scripts/find-pr-threads-needing-replies.ts <pr-number> <ai-platform>
+  npx tsx .xe/playbooks/scripts/findPrThreadsNeedingReplies.ts <pr-number> <ai-platform>
   ```
   The output should show 0 threads needing replies.
-- Validate that all comments from other reviewers have been addressed with responses.
-- Validate that no comments from the current AI platform were responded to, identified by `[Catalyst][{ai-platform}]`.
 - Ensure all implemented changes follow project coding standards.
 - Run automated tests after making changes, if available.
 - Validate that security scans still pass, if applicable.
@@ -300,8 +294,7 @@ This playbook requires comprehensive analysis to evaluate PR feedback quality an
 
 The playbook succeeds when:
 
-- [ ] All comments from other reviewers have received appropriate threaded replies.
-- [ ] No replies were added to comment threads where the last latest was from the current AI platform, identified by `[Catalyst][{ai-platform}]`.
+- [ ] Thread identification script shows 0 threads needing replies.
 - [ ] Valid suggestions have been implemented and pushed to the PR branch.
 - [ ] All responses use the `[Catalyst][{ai-platform}]` prefix.
 - [ ] Push-back counts are tracked accurately (max 3 per thread).
