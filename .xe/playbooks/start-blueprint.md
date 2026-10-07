@@ -19,8 +19,8 @@ Creates or updates the product blueprint which breaks down the product vision in
 ## Outputs
 
 - Feature branch at `xe/{username}/blueprint`
-- Blueprint specification at `.xe/specs/blueprint/spec.md` - The canonical feature roadmap (all features, dependencies, priorities)
-- Blueprint plan at `.xe/specs/blueprint/plan.md` - Feature breakdown methodology
+- Blueprint specification at `.xe/specs/blueprint/spec.md` - Product-level functional/non-functional requirements and success criteria
+- Blueprint plan at `.xe/specs/blueprint/plan.md` - Feature catalog and dependency graph that realizes the spec's requirements
 - Blueprint tasks at `.xe/specs/blueprint/tasks.md` - Steps to populate the spec
 - Blueprint research at `.xe/specs/blueprint/research.md` - Product analysis and competitive research
 - Pull request for code review and merge
@@ -87,17 +87,11 @@ Creates or updates the product blueprint which breaks down the product vision in
 
 1. Create `.xe/specs/blueprint/spec.md` using the `.xe/templates/specs/spec.md` template:
    - **Description:** Product vision and blueprint purpose
-   - **Requirements:** Document all features identified in Phase 1:
-     - Core entities list
-     - Feature dependency graph (mermaid format, must be acyclic)
-     - For each feature:
-       - Feature ID (kebab-case)
-       - Feature name and 1-2 sentence scope description
-       - Dependencies (list of feature IDs this depends on)
-       - Complexity estimate (Small, Medium, Large)
-       - Priority order number
-   - **Success Criteria:** All features documented, dependency graph is acyclic, features are properly scoped
-   - **IMPORTANT:** This spec IS the blueprint. It documents features to be built later via `start-rollout`. It does NOT implement them.
+   - **Core Entities:** Domain concepts that span multiple features
+   - **Functional Requirements:** Product-level FRs stated as capabilities the system MUST provide (e.g., "system MUST allow founders to configure X", "system MUST generate Y structured into Z"). These describe WHAT the product does, never HOW (no file paths, API signatures, workflow triggers, or feature IDs — those are implementation details and belong in plan.md)
+   - **Non-Functional Requirements:** Product-level qualities (determinism, extensibility, auditability, etc.)
+   - **Success Criteria:** Criteria for successfully implementing the blueprint (i.e., delivering the product) — NOT criteria about the spec document's own completeness. Example: "all features are implemented and merged", "a user can complete the end-to-end workflow", "the product fulfills `.xe/product.md`"
+   - **IMPORTANT:** The feature catalog (IDs, dependencies, complexity, priority, deliverables) and the dependency graph are the implementation mechanism for these requirements — they belong in plan.md, not spec.md. spec.md states requirements; plan.md states how features realize them.
 2. **Human Checkpoint** → Present specification for review:
 
    |    #     | Option                     | Notes                               |
@@ -111,13 +105,16 @@ Creates or updates the product blueprint which breaks down the product vision in
 ### Development Process Phase 3: Planning 🏗️
 
 1. Create `.xe/specs/blueprint/plan.md` using the `.xe/templates/specs/plan.md` template:
-   - **Implementation Approach:** Describe methodology for breaking down product into features
-   - **Data Model:** Define structure used in spec.md (entities, feature format, graph format)
-   - **Constraints:** This populates the spec.md file only - no code implementation
+   - **Feature Dependency Graph:** Mermaid graph (must be acyclic), organized by tier
+   - **Feature Catalog:** For each feature: ID (kebab-case), name, 1-2 sentence scope, dependencies (feature IDs), complexity (Small/Medium/Large), priority order, deliverables
+   - **Data Model:** Not applicable (blueprints don't define data models — those belong to individual features)
+   - **Implementation Approach:** Recommended feature build order, parallelization opportunities, critical path
+   - **Constraints:** This populates the plan.md and spec.md files only - no code implementation
+   - **IMPORTANT:** Do not duplicate the dependency graph or feature catalog into spec.md — spec.md links here instead.
 2. Create `.xe/specs/blueprint/tasks.md` using the `.xe/templates/specs/tasks.md` template:
-   - Task 1: Populate spec.md Requirements section with core entities
-   - Task 2: Add feature dependency graph to spec.md (mermaid format)
-   - Task 3: Add all features to spec.md with IDs, dependencies, scope, complexity, priority
+   - Task 1: Populate spec.md with core entities, functional requirements, and non-functional requirements
+   - Task 2: Add feature dependency graph to plan.md (mermaid format)
+   - Task 3: Add all features to plan.md's feature catalog with IDs, dependencies, scope, complexity, priority
    - Task 4: Validate no circular dependencies in graph
    - Task 5: Validate all features have required fields
    - Task 6: Review for completeness and accuracy
@@ -133,19 +130,17 @@ Creates or updates the product blueprint which breaks down the product vision in
 ### Development Process Phase 4: Implementation Execution 🚀
 
 1. Execute pre-implementation actions (if any in rollout plan)
-2. Execute `.xe/specs/blueprint/tasks.md` to populate `.xe/specs/blueprint/spec.md`
-3. **IMPORTANT:** This ONLY populates the spec.md file with features. It does NOT implement any features via code.
-4. Validate the blueprint spec:
+2. Execute `.xe/specs/blueprint/tasks.md` to populate `.xe/specs/blueprint/spec.md` and `.xe/specs/blueprint/plan.md`
+3. **IMPORTANT:** This ONLY populates the spec.md and plan.md files with requirements and features. It does NOT implement any features via code.
+4. Validate the blueprint:
    - All features have unique IDs (kebab-case)
    - Dependency graph is present and acyclic
    - Features are numbered in priority/dependency order
    - Each feature has: ID, dependencies, scope, complexity, priority
+   - spec.md contains requirements only — no feature catalog or dependency graph duplicated from plan.md
 5. Execute post-implementation actions (if any in rollout plan)
 6. Complete immediate cleanup actions
-7. Update rollout plan with feature implementation tracking:
-   - Add a "Feature Status" section listing all features
-   - Mark each feature as: Not Started | In Progress | Complete
-   - This becomes the living status tracker for product build progress
+7. Feature implementation tracking lives in `tasks.md` (one task per feature, checked off as each is implemented) — do NOT add a "Feature Status" section or per-feature status labels to the rollout plan. The rollout plan only tracks the blueprint rollout itself (pre/post-implementation actions, cleanup).
 8. **Keep rollout plan and README entry** - Do NOT delete until all blueprint features are implemented
 
 **Next Steps After Blueprint PR is Merged:**
@@ -159,9 +154,9 @@ Creates or updates the product blueprint which breaks down the product vision in
 
 Verify all items in Success Criteria section below are met:
 
-- Blueprint spec at `.xe/specs/blueprint/spec.md` is complete
-- All features are documented with IDs, dependencies, scope, complexity, and priority
-- Dependency graph is present and acyclic
+- Blueprint spec at `.xe/specs/blueprint/spec.md` states product-level functional/non-functional requirements only
+- Blueprint plan at `.xe/specs/blueprint/plan.md` documents all features with IDs, dependencies, scope, complexity, and priority
+- Dependency graph is present in plan.md and acyclic
 - Features are prioritized appropriately
 
 ## 6. Request review
@@ -210,15 +205,16 @@ Post PR comment with:
 
 - [ ] Feature branch created at `xe/{username}/blueprint`
 - [ ] Rollout plan created at `.xe/rollouts/rollout-blueprint.md` with:
-  - [ ] Feature status tracking section added
-  - [ ] All features listed as "Not Started"
+  - [ ] References `tasks.md` for feature implementation tracking (no separate "Feature Status" section)
   - [ ] Entry added to `.xe/rollouts/README.md` index
 - [ ] Blueprint spec created at `.xe/specs/blueprint/spec.md` with:
   - [ ] Product vision documented
   - [ ] Core entities listed
+  - [ ] Functional and non-functional requirements documented (no feature catalog or dependency graph)
+  - [ ] Success criteria describe blueprint implementation (product delivery), not spec document completeness
+- [ ] Blueprint plan created at `.xe/specs/blueprint/plan.md` with:
   - [ ] Feature dependency graph (acyclic, mermaid format)
   - [ ] All features documented with ID, dependencies, scope, complexity, and priority
-- [ ] Blueprint plan created at `.xe/specs/blueprint/plan.md`
 - [ ] Blueprint tasks created at `.xe/specs/blueprint/tasks.md`
 - [ ] Product research documented at `.xe/specs/blueprint/research.md`
 - [ ] Pull request created with proper title and description

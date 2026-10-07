@@ -7,7 +7,7 @@ description: "This document defines the tasks required to fully implement all fe
 
 # Tasks: Blueprint
 
-**Input**: Blueprint specification from `.xe/specs/blueprint/spec.md`
+**Input**: Feature catalog from `.xe/specs/blueprint/plan.md`
 **Prerequisites**: Blueprint spec.md, plan.md, research.md
 
 **Note**: This tasks.md represents the IMPLEMENTATION of all features defined in the blueprint, not the creation of the blueprint specification itself. The blueprint specification was completed during the Analysis and Specification phases. Implementation executes each feature using `/catalyst:run start-rollout {feature-id}`.
